@@ -1,0 +1,29 @@
+[package]
+name = "clipcut-export"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Rendering a timeline to a file, and one true frame of it to a monitor. The engine's ownership of what the pixels mean."
+
+[features]
+# The GPU compositor is the only one now, so it is always built; the
+# feature is kept so the crates that name it need not change.
+gpu = []
+
+[dependencies]
+clipcut-core.workspace = true
+clipcut-media.workspace = true
+clipcut-render.workspace = true
+clipcut-project = { path = "../clipcut-project" }
+clipcut-effects.workspace = true
+# Masks for cutouts: read from the project's cache and applied to a decoded
+# frame before it is placed. Reading only; the host finds them.
+clipcut-vision.workspace = true
+serde = { version = "1", features = ["derive"] }
+log = "0.4"
+# The export's one line at its end: how it went and where its time went.
+clipcut-log.workspace = true
+
+[lints]
+workspace = true

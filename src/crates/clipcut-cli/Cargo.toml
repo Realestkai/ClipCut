@@ -1,0 +1,34 @@
+[package]
+name = "clipcut-cli"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Command line driver for the ClipCut engine."
+
+# `clipcut` is the editor window's binary; the driver gets the suffix.
+[[bin]]
+name = "clipcut-cli"
+path = "src/main.rs"
+
+[dependencies]
+clipcut-core.workspace = true
+clipcut-media.workspace = true
+clipcut-render.workspace = true
+# The `api` command: the ClipCut API over stdin and stdout. The `serve`
+# command: the same on a socket.
+clipcut-api.workspace = true
+clipcut-server.workspace = true
+serde_json.workspace = true
+# `preview` draws one effect's card, as the window does; `check` loads
+# packages and runs their probes.
+clipcut-effects.workspace = true
+clipcut-host.workspace = true
+clap.workspace = true
+
+[features]
+# `serve --grpc`. Off by default; see clipcut-server.
+grpc = ["clipcut-server/grpc"]
+
+[lints]
+workspace = true

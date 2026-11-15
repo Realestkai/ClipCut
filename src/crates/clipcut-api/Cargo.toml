@@ -1,0 +1,33 @@
+[package]
+name = "clipcut-api"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "The ClipCut API: one dispatcher for projects, edits, media, effects, templates, exports and frames, which every transport - the command line, a daemon, a plugin - calls."
+
+[dependencies]
+clipcut-core.workspace = true
+clipcut-project.workspace = true
+clipcut-effects.workspace = true
+clipcut-export.workspace = true
+clipcut-host.workspace = true
+serde = { version = "1", features = ["derive"] }
+serde_json.workspace = true
+# The frame method hands back a PNG: the one picture format every
+# caller reads and that keeps the compositor's pixels exact.
+png = "0.17"
+# A frame handed back inline crosses as text.
+base64 = "0.22"
+schemars = { workspace = true, optional = true }
+
+[features]
+# A JSON Schema for every request, generated from the types and their doc
+# comments: what clipcut-mcp gives an agent for each tool's arguments.
+schema = ["dep:schemars", "clipcut-project/schema", "clipcut-host/schema"]
+
+[dev-dependencies]
+tempfile = "3"
+
+[lints]
+workspace = true
