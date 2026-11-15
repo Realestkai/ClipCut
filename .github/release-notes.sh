@@ -27,7 +27,8 @@
 # A subject that survives is printed as a sentence. A `feat(studio):` in
 # front of one is scaffolding for the log and reads as noise in a release,
 # so the type comes off and the first letter goes up. A subject that appears
-# twice appears once.
+# twice appears once. No commits between the two refs, or none that
+# survive, is not a failure: the notes then have no "What changed".
 set -euo pipefail
 
 since="$1"
@@ -69,7 +70,7 @@ changes=$(git log "$since..$until" --no-merges --format='%s' 2>/dev/null \
         print prefix toupper(substr($0, 1, 1)) substr($0, 2)
       }' \
   | awk '!seen[$0]++' \
-  | sed 's/^/- /')
+  | sed 's/^/- /' || true)
 
 echo "## $title"
 echo
