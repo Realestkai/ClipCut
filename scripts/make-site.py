@@ -18,7 +18,11 @@ shutil.copy("assets/icons/clipcut_logo_256.png", SITE / "assets" / "icon.png")
 shutil.copy("assets/icons/clipcut_logo_64.png", SITE / "assets" / "favicon.png")
 
 RELEASES = "https://github.com/Realestkai/ClipCut/releases/latest"
-ISSUES = "https://github.com/Realestkai/ClipCut/issues/new/choose"
+# Where a report is sent: by email, with the subject filled in. The report
+# page is the only place the address appears; change it here. Empty, the
+# page lists what to send and has no button.
+REPORT_EMAIL = "jairvianen@icloud.com"
+REPORT_TO = f"mailto:{REPORT_EMAIL}?subject=ClipCut%20problem%20report" if REPORT_EMAIL else ""
 
 
 def page(name, title, description, body, here):
@@ -61,7 +65,6 @@ def page(name, title, description, body, here):
         <a href="docs.html">Docs</a>
         <a href="whats-new.html">What's new</a>
         <a href="report.html">Report a problem</a>
-        <a href="https://github.com/Realestkai/ClipCut">Source code</a>
       </span>
     </div>
   </footer>
@@ -203,6 +206,11 @@ page("whats-new.html", "What's new in ClipCut",
     </div>
   </main>""", "whats-new.html")
 
+REPORT_BUTTON = (
+    f'      <p style="margin-top:28px"><a class="btn primary" href="{REPORT_TO}">Email a report</a></p>\n'
+    '      <p class="under" style="text-align:left">Attach the log file to the email and paste the system information into it.</p>'
+    if REPORT_TO else "")
+
 page("report.html", "Report a problem with ClipCut",
      "How to report a bug in ClipCut so it can be fixed.",
      f"""  <main class="page">
@@ -215,8 +223,7 @@ page("report.html", "Report a problem with ClipCut",
         <div class="card"><h3>The log</h3><p><strong>Settings &rsaquo; About &rsaquo; Show the log</strong> opens the folder: attach the newest file. If ClipCut closed by itself, start it again first and attach the file before the newest.</p></div>
         <div class="card"><h3>Your computer</h3><p><strong>Settings &rsaquo; About &rsaquo; Copy system information</strong>, pasted into the report.</p></div>
       </div>
-      <p style="margin-top:28px"><a class="btn primary" href="{ISSUES}">Open a report</a></p>
-      <p class="under" style="text-align:left">Reports are public, so leave out anything private. A free account is needed to post one.</p>
+{REPORT_BUTTON}
     </div>
   </main>""", "report.html")
 print("site written:", sorted(p.name for p in SITE.iterdir()))

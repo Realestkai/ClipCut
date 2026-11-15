@@ -1,0 +1,110 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// SPDX-FileCopyrightText: 2026 Jareer Abdullah and ClipCut contributors
+
+import { I18n } from "../i18n.slint";
+import { Theme } from "../theme/theme.slint";
+import { Glyph } from "../icons.slint";
+import { Button, Modal } from "../primitives/modal.slint";
+
+/// One change in this version: its name, and what it does.
+export struct WhatsNewItem {
+    title: string,
+    text: string,
+}
+
+// What changed in the version that is running. It comes up by itself the
+// first time a version is launched and again from the launch screen's
+// What's new card; Rust decides when (whats_new.rs) and fills the list
+// from the version's file. Return and Escape both put it away: there is
+// nothing to decide, only something to have read. A list longer than the
+// window scrolls, as every Modal's body does.
+export component WhatsNewDialog inherits Modal {
+    in property <string> version;
+    in property <[WhatsNewItem]> items;
+
+    callback dismissed();
+    /// The website's page of every version.
+    callback all-versions();
+
+    title: I18n.t1("start.whatsNew", root.version);
+    glyph: Glyph.sparkle;
+    surface-width: 480px;
+
+    closed => { root.dismissed(); }
+
+    // The keys go to the sheet the moment it shows, not to whatever had
+    // focus under it.
+    changed open => {
+        if (root.open) {
+            keys.focus();
+        }
+    }
+
+    /// The width a line of the list wraps at, said outright: the sheet
+    /// sizes itself from its body's preferred height, which a wrapped
+    /// Text only knows once it knows its width. Left to the layout, each
+    /// two-line item counted as one and the buttons sat on the last. It
+    /// is worked out from the window, as Modal works out its surface, and
+    /// not read back from the layout, which would be a loop.
+    property <length> room: root.width - root.inset-left - root.inset-right;
+    property <length> text-width: (root.fill ? root.room : Math.min(root.surface-width, root.room - 24px)) - 34px;
+
+    keys := FocusScope {
+        key-pressed(event) => {
+            if (event.text == Key.Escape || event.text == Key.Return) {
+                root.dismissed();
+                return accept;
+            }
+            reject
+        }
+
+        VerticalLayout {
+            padding: 16px;
+            spacing: 18px;
+
+            VerticalLayout {
+                spacing: 14px;
+
+                for item in root.items: VerticalLayout {
+                    spacing: 3px;
+
+                    Text {
+                        width: root.text-width;
+                        text: item.title;
+                        color: Theme.fg;
+                        font-size: Theme.fs;
+                        font-weight: Theme.weight-title;
+                        wrap: word-wrap;
+                    }
+
+                    if item.text != "": Text {
+                        width: root.text-width;
+                        text: item.text;
+                        color: Theme.fg-muted;
+                        font-size: Theme.fs;
+                        wrap: word-wrap;
+                    }
+                }
+            }
+
+            HorizontalLayout {
+                spacing: 8px;
+
+                Button {
+                    label: I18n.t("start.whatsNewAllVersions");
+                    glyph: Glyph.arrow-up-right;
+                    ghost: true;
+                    clicked => { root.all-versions(); }
+                }
+
+                Rectangle { horizontal-stretch: 1; }
+
+                Button {
+                    label: I18n.t("start.whatsNewGotIt");
+                    primary: true;
+                    clicked => { root.dismissed(); }
+                }
+            }
+        }
+    }
+}

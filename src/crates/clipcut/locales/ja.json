@@ -794,6 +794,8 @@
   "start.newsNote": "このバージョンの変更点を見る",
   "start.welcomeNote": "このマシンだけで動く無料のビデオエディター。",
   "start.whatsNew": "{0} の新機能",
+  "start.whatsNewAllVersions": "すべてのバージョン",
+  "start.whatsNewGotIt": "了解",
   "start.whereShouldProjectFolder": "プロジェクトフォルダをどこに置きますか?",
   "studio.addAtPlayhead": "再生ヘッドに追加",
   "studio.addSelectedToTimeline": "選択項目をタイムラインに追加",

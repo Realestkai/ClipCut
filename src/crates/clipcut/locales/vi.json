@@ -794,6 +794,8 @@
   "start.newsNote": "Xem những gì đã thay đổi trong phiên bản này",
   "start.welcomeNote": "Trình chỉnh sửa video miễn phí chạy hoàn toàn trên máy này.",
   "start.whatsNew": "Có gì mới trong {0}",
+  "start.whatsNewAllVersions": "Mọi phiên bản",
+  "start.whatsNewGotIt": "Đã hiểu",
   "start.whereShouldProjectFolder": "Đặt thư mục dự án ở đâu?",
   "studio.addAtPlayhead": "Thêm tại đầu phát",
   "studio.addSelectedToTimeline": "Thêm mục đã chọn vào timeline",

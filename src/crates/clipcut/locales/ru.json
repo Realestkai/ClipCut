@@ -794,6 +794,8 @@
   "start.newsNote": "Посмотрите, что изменилось в этой версии",
   "start.welcomeNote": "Бесплатный видеоредактор, который работает целиком на этом компьютере.",
   "start.whatsNew": "Что нового в {0}",
+  "start.whatsNewAllVersions": "Все версии",
+  "start.whatsNewGotIt": "Понятно",
   "start.whereShouldProjectFolder": "Где разместить папку проекта?",
   "studio.addAtPlayhead": "Добавить по курсору",
   "studio.addSelectedToTimeline": "Добавить выбранное на таймлайн",

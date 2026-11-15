@@ -1083,6 +1083,9 @@ pub struct Studio {
     pub relink: crate::panes::relink::RelinkPane,
     /// What the confirmation sheet is asking about, while it is up.
     pub confirm: Option<Confirm>,
+    /// The What's new dialog is up: by itself on a version's first launch,
+    /// or from the launch screen's card. See `whats_new`.
+    pub whats_new: bool,
     /// The clip whose incoming transition is selected, while no clip is:
     /// a transition is picked on its own, not as part of the clip it rides
     /// into. Read through [`Studio::selected_transition`], which holds it
@@ -3111,6 +3114,7 @@ impl Studio {
             settings: crate::panes::settings::SettingsPane::default(),
             relink: crate::panes::relink::RelinkPane::default(),
             confirm: None,
+            whats_new: false,
             transition_selected: None,
             open_menu: -1,
             menu_bar_token: 0,

@@ -794,6 +794,8 @@
   "start.newsNote": "اطّلع على ما تغيّر في هذا الإصدار",
   "start.welcomeNote": "محرر فيديو مجاني يعمل بالكامل على هذا الجهاز.",
   "start.whatsNew": "ما الجديد في {0}",
+  "start.whatsNewAllVersions": "كل الإصدارات",
+  "start.whatsNewGotIt": "فهمت",
   "start.whereShouldProjectFolder": "أين يجب أن يكون مجلد المشروع؟",
   "studio.addAtPlayhead": "إضافة عند مؤشر التشغيل",
   "studio.addSelectedToTimeline": "إضافة المحدّد إلى المخطط الزمني",

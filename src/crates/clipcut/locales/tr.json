@@ -794,6 +794,8 @@
   "start.newsNote": "Bu sürümde nelerin değiştiğine bakın",
   "start.welcomeNote": "Tamamen bu makinede çalışan ücretsiz bir video düzenleyici.",
   "start.whatsNew": "{0} sürümündeki yenilikler",
+  "start.whatsNewAllVersions": "Tüm sürümler",
+  "start.whatsNewGotIt": "Anladım",
   "start.whereShouldProjectFolder": "Proje klasörü nereye gitsin?",
   "studio.addAtPlayhead": "Playhead konumuna ekle",
   "studio.addSelectedToTimeline": "Seçilenleri zaman çizelgesine ekle",

@@ -794,6 +794,8 @@
   "start.newsNote": "Bekijk wat er in deze versie is veranderd",
   "start.welcomeNote": "Een gratis video-editor die volledig op deze computer draait.",
   "start.whatsNew": "Nieuw in {0}",
+  "start.whatsNewAllVersions": "Alle versies",
+  "start.whatsNewGotIt": "Begrepen",
   "start.whereShouldProjectFolder": "Waar moet de projectmap komen?",
   "studio.addAtPlayhead": "Toevoegen bij afspeelkop",
   "studio.addSelectedToTimeline": "Selectie aan tijdlijn toevoegen",

@@ -1789,7 +1789,7 @@ component WideHome inherits Rectangle {
                         compact: true;
                         title: I18n.t1("start.whatsNew", root.version);
                         note: I18n.t("start.newsNote");
-                        clicked => { root.link("news"); }
+                        clicked => { root.link("whats-new"); }
                     }
 
                     SectionHead {
@@ -1817,7 +1817,7 @@ component WideHome inherits Rectangle {
                 enabled: root.aside;
                 title: I18n.t1("start.whatsNew", root.version);
                 note: I18n.t("start.newsNote");
-                clicked => { root.link("news"); }
+                clicked => { root.link("whats-new"); }
             }
 
             side := Rectangle {
@@ -2066,7 +2066,7 @@ component NarrowHome inherits Rectangle {
                 compact: true;
                 title: I18n.t1("start.whatsNew", root.version);
                 note: I18n.t("start.newsNote");
-                clicked => { root.link("news"); }
+                clicked => { root.link("whats-new"); }
             }
         }
     }

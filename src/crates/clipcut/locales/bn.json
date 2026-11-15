@@ -794,6 +794,8 @@
   "start.newsNote": "এই সংস্করণে কী বদলেছে দেখুন",
   "start.welcomeNote": "একটি বিনামূল্যের ভিডিও এডিটর যা পুরোপুরি এই মেশিনেই চলে।",
   "start.whatsNew": "{0}-এ নতুন কী",
+  "start.whatsNewAllVersions": "সব সংস্করণ",
+  "start.whatsNewGotIt": "বুঝেছি",
   "start.whereShouldProjectFolder": "প্রজেক্ট ফোল্ডার কোথায় যাবে?",
   "studio.addAtPlayhead": "প্লেহেডে যোগ করুন",
   "studio.addSelectedToTimeline": "নির্বাচিতগুলো টাইমলাইনে যোগ করুন",

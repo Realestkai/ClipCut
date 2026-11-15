@@ -1,0 +1,16 @@
+{
+  "items": [
+    {
+      "title": "What's new, inside ClipCut",
+      "text": "The first time you open a new version, ClipCut shows what changed in it. The What's new card on the launch screen opens this list again."
+    },
+    {
+      "title": "ClipCut has a website",
+      "text": "Downloads, the guides and how to report a problem are in one place, and the launch screen's Documentation and Report a problem cards open it."
+    },
+    {
+      "title": "Models download from ClipCut's own mirror",
+      "text": "The caption, voice and cutout models come from ClipCut's own release page, and each one is checked to be intact as it arrives."
+    }
+  ]
+}

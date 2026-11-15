@@ -794,6 +794,8 @@
   "start.newsNote": "Zobacz, co zmieniło się w tej wersji",
   "start.welcomeNote": "Darmowy edytor wideo, który działa w całości na tym komputerze.",
   "start.whatsNew": "Nowości w {0}",
+  "start.whatsNewAllVersions": "Wszystkie wersje",
+  "start.whatsNewGotIt": "Rozumiem",
   "start.whereShouldProjectFolder": "Gdzie ma się znaleźć folder projektu?",
   "studio.addAtPlayhead": "Dodaj na głowicy",
   "studio.addSelectedToTimeline": "Dodaj zaznaczone do osi czasu",

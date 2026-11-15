@@ -794,6 +794,8 @@
   "start.newsNote": "查看此版本的更新内容",
   "start.welcomeNote": "一款完全在这台电脑上运行的免费视频编辑器。",
   "start.whatsNew": "{0} 的新功能",
+  "start.whatsNewAllVersions": "所有版本",
+  "start.whatsNewGotIt": "知道了",
   "start.whereShouldProjectFolder": "项目文件夹要放在哪里？",
   "studio.addAtPlayhead": "在播放头处添加",
   "studio.addSelectedToTimeline": "将所选项添加到时间线",

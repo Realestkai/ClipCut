@@ -794,6 +794,8 @@
   "start.newsNote": "Lihat apa yang berubah di versi ini",
   "start.welcomeNote": "Editor video gratis yang berjalan sepenuhnya di mesin ini.",
   "start.whatsNew": "Yang baru di {0}",
+  "start.whatsNewAllVersions": "Semua versi",
+  "start.whatsNewGotIt": "Mengerti",
   "start.whereShouldProjectFolder": "Di mana folder proyek akan disimpan?",
   "studio.addAtPlayhead": "Tambahkan di penanda putar",
   "studio.addSelectedToTimeline": "Tambahkan pilihan ke linimasa",

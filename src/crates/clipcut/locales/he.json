@@ -794,6 +794,8 @@
   "start.newsNote": "מה השתנה בגרסה הזו",
   "start.welcomeNote": "עורך וידאו חינמי שפועל כולו במחשב הזה.",
   "start.whatsNew": "מה חדש ב-{0}",
+  "start.whatsNewAllVersions": "כל הגרסאות",
+  "start.whatsNewGotIt": "הבנתי",
   "start.whereShouldProjectFolder": "איפה תהיה תיקיית הפרויקט?",
   "studio.addAtPlayhead": "הוספה בסמן ההפעלה",
   "studio.addSelectedToTimeline": "הוספת הנבחרים לציר הזמן",

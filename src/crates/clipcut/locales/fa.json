@@ -794,6 +794,8 @@
   "start.newsNote": "ببینید در این نسخه چه چیزهایی تغییر کرده است",
   "start.welcomeNote": "یک ویرایشگر ویدئوی رایگان که کاملاً روی همین دستگاه اجرا می‌شود.",
   "start.whatsNew": "تازه‌های {0}",
+  "start.whatsNewAllVersions": "همهٔ نسخه‌ها",
+  "start.whatsNewGotIt": "فهمیدم",
   "start.whereShouldProjectFolder": "پوشه پروژه کجا ذخیره شود؟",
   "studio.addAtPlayhead": "افزودن در نشانگر پخش",
   "studio.addSelectedToTimeline": "افزودن موارد انتخاب‌شده به تایم‌لاین",

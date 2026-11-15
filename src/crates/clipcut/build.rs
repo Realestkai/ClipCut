@@ -103,6 +103,42 @@ fn main() {
         std::fs::write(out, table).expect("write bundled_cards.rs");
     }
 
+    // What each version changed: site/whats-new/<version>.json, the files
+    // the website shows too. A table of include_str!s by version, so a
+    // release adds a file and nothing in Rust names it; see whats_new.rs.
+    {
+        let root =
+            std::path::PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").expect("manifest dir"))
+                .join("../../../site/whats-new");
+        println!("cargo:rerun-if-changed={}", root.display());
+        let mut files: Vec<std::path::PathBuf> = std::fs::read_dir(&root)
+            .map(|entries| {
+                entries
+                    .filter_map(|entry| entry.ok())
+                    .map(|entry| entry.path())
+                    .filter(|path| path.extension().is_some_and(|ext| ext == "json"))
+                    .collect()
+            })
+            .unwrap_or_default();
+        files.sort();
+        let mut table = String::from("pub static NOTES: &[(&str, &str)] = &[\n");
+        for file in &files {
+            println!("cargo:rerun-if-changed={}", file.display());
+            let version = file
+                .file_stem()
+                .and_then(|stem| stem.to_str())
+                .expect("a version's name");
+            table.push_str(&format!(
+                "    ({version:?}, include_str!({:?})),\n",
+                file.display().to_string()
+            ));
+        }
+        table.push_str("];\n");
+        let out = std::path::PathBuf::from(std::env::var("OUT_DIR").expect("out dir"))
+            .join("whats_new.rs");
+        std::fs::write(out, table).expect("write whats_new.rs");
+    }
+
     // The .exe's icon. The window's own is set in app.slint, but Explorer,
     // the Start menu and a pinned taskbar button read the file's resources,
     // and without one they show Windows' generic program icon. Needs the

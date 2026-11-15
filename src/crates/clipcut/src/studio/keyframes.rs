@@ -1996,6 +1996,7 @@ impl Studio {
             |data| app.set_relink(data),
         );
         app.set_confirm(self.confirm_data());
+        app.set_whats_new_open(self.whats_new);
 
         // The speech sheets, and the lists they choose from.
         let transcribers = installed(&self.settings.transcribers);

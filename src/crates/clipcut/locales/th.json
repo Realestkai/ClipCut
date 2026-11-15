@@ -794,6 +794,8 @@
   "start.newsNote": "ดูว่ามีอะไรเปลี่ยนแปลงในเวอร์ชันนี้",
   "start.welcomeNote": "โปรแกรมตัดต่อวิดีโอฟรีที่ทำงานบนเครื่องนี้ทั้งหมด",
   "start.whatsNew": "มีอะไรใหม่ใน {0}",
+  "start.whatsNewAllVersions": "ทุกเวอร์ชัน",
+  "start.whatsNewGotIt": "เข้าใจแล้ว",
   "start.whereShouldProjectFolder": "จะเก็บโฟลเดอร์โปรเจกต์ไว้ที่ไหน",
   "studio.addAtPlayhead": "เพิ่มที่หัวเล่น",
   "studio.addSelectedToTimeline": "เพิ่มรายการที่เลือกลงไทม์ไลน์",

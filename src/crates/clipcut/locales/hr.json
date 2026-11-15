@@ -794,6 +794,8 @@
   "start.newsNote": "Pogledajte što se promijenilo u ovoj verziji",
   "start.welcomeNote": "Besplatan uređivač videa koji radi u potpunosti na ovom računalu.",
   "start.whatsNew": "Novosti u {0}",
+  "start.whatsNewAllVersions": "Sve verzije",
+  "start.whatsNewGotIt": "Razumijem",
   "start.whereShouldProjectFolder": "Kamo bi mapa projekta trebala ići?",
   "studio.addAtPlayhead": "Dodaj na playheadu",
   "studio.addSelectedToTimeline": "Dodaj odabrano na vremensku liniju",

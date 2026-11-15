@@ -86,18 +86,35 @@ function notes(markdown) {
   return out.join("\n");
 }
 
+// A version's highlights: site/whats-new/<version>.json, the file the app
+// shows in its own What's new dialog. Most versions have none.
+async function highlights(version) {
+  try {
+    const response = await fetch(`whats-new/${version}.json`);
+    if (!response.ok) return "";
+    const items = (await response.json()).items || [];
+    if (!items.length) return "";
+    return `<ul class="highlights">${items.map((item) =>
+      `<li><strong>${escapeHtml(item.title || "")}</strong>${item.text ? `<span>${escapeHtml(item.text)}</span>` : ""}</li>`).join("")}</ul>`;
+  } catch {
+    return "";
+  }
+}
+
 async function fillNews() {
   const spot = document.querySelector("#releases");
   if (!spot) return;
   try {
     const all = await releases();
     if (!all.length) { spot.innerHTML = "<p>No releases yet.</p>"; return; }
+    const top = await Promise.all(all.map((release) => highlights(release.tag_name.slice(1))));
     spot.innerHTML = all.map((release, index) => {
       const when = new Date(release.published_at).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
       const body = notes(release.body || "") || "<p>Fixes and polish.</p>";
       return `<article class="release" id="${release.tag_name}">
         <h2>ClipCut ${release.tag_name.slice(1)}${index === 0 ? '<span class="tag">Latest</span>' : ""}</h2>
         <div class="when">${when}</div>
+        ${top[index]}
         ${body}
       </article>`;
     }).join("\n");

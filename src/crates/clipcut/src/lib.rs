@@ -77,6 +77,7 @@ mod sysinfo;
 /// Native Wayland file drops, which winit does not report; see the module.
 #[cfg(target_os = "linux")]
 mod wayland_drop;
+mod whats_new;
 /// Elsewhere the listener is a name that starts nothing, so platform.rs
 /// reads the same on every desktop.
 #[cfg(not(any(target_os = "linux", target_os = "android")))]
@@ -393,6 +394,31 @@ fn start(project: Option<std::path::PathBuf>, smoke: bool) -> Result<(), slint::
     if platform::last_run_died() {
         log::info!("start: the last run died; offering its log");
         studio.confirm = Some(studio::Confirm::LastRunClosed);
+    }
+    // What this version changed, once: the first launch of a version that
+    // has notes puts them up and remembers that it did. The list is the
+    // same for as long as the program runs, so it is set here and only
+    // whether the dialog is up is published.
+    {
+        let items: Vec<ui::WhatsNewItem> = whats_new::items(whats_new::VERSION)
+            .into_iter()
+            .map(|item| ui::WhatsNewItem {
+                title: item.title.into(),
+                text: item.text.into(),
+            })
+            .collect();
+        app.set_whats_new_items(ModelRc::from(std::rc::Rc::new(VecModel::from(items))));
+        // Not on a smoke run, which nobody watches: it would use up the
+        // one showing.
+        if !smoke && whats_new::unseen(studio.prefs.whats_new_seen.as_deref(), whats_new::VERSION) {
+            log::info!(
+                "start: first launch of {}; showing what is new",
+                whats_new::VERSION
+            );
+            studio.whats_new = true;
+            studio.prefs.whats_new_seen = Some(whats_new::VERSION.to_owned());
+            studio.prefs.save(&studio.host.dirs);
+        }
     }
     if safe {
         // Each key in a call of its own: scripts/locales.py finds a key by
@@ -2067,6 +2093,12 @@ fn start(project: Option<std::path::PathBuf>, smoke: bool) -> Result<(), slint::
     }));
     app.on_confirm_dismissed(on_window!(|state| {
         state.confirm = None;
+    }));
+    app.on_whats_new_dismissed(on_window!(|state| {
+        state.whats_new = false;
+    }));
+    app.on_whats_new_all_versions(on_window!(|state| {
+        state.handle(Msg::Start(StartMsg::Link("news".to_owned())));
     }));
 
     app.on_relink_all(on_window!(|state| {

@@ -794,6 +794,8 @@
   "start.newsNote": "Bu versiyada nələrin dəyişdiyinə baxın",
   "start.welcomeNote": "Tamamilə bu maşında işləyən pulsuz video redaktor.",
   "start.whatsNew": "{0} versiyasında yeniliklər",
+  "start.whatsNewAllVersions": "Bütün versiyalar",
+  "start.whatsNewGotIt": "Aydındır",
   "start.whereShouldProjectFolder": "Layihə qovluğu harada olsun?",
   "studio.addAtPlayhead": "Oxutma başlığında əlavə et",
   "studio.addSelectedToTimeline": "Seçilmişləri zaman xəttinə əlavə et",

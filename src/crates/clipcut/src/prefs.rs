@@ -77,6 +77,10 @@ pub struct Preferences {
     pub tts_voice: Option<i32>,
     /// The interface's locale code ("de", "pt-BR", ...); absent is English.
     pub locale: Option<String>,
+    /// The last version whose What's new dialog came up by itself, so each
+    /// version's shows once: a launch of any other version that has notes
+    /// shows them and writes itself here. `None` is a fresh install.
+    pub whats_new_seen: Option<String>,
     /// Package ids starred in the effect libraries, in no order. One list
     /// across all three shelves: a star is a fact about a package, and which
     /// library it happens to be filed in is not part of it.
