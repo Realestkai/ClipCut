@@ -1484,16 +1484,12 @@ global Learn {
         name: "shortcuts", glyph: Glyph.keyboard, external: false,
         title: I18n.t("start.keyboardShortcuts"), note: I18n.t("start.keyboardShortcutsNote"),
     };
-    out property <LearnItem> code: {
-        name: "github", glyph: Glyph.github, external: true,
-        title: "GitHub", note: I18n.t("start.githubNote"),
-    };
     out property <LearnItem> report: {
         name: "report", glyph: Glyph.bug, external: true,
         title: I18n.t("start.reportProblem"), note: I18n.t("start.reportProblemNote"),
     };
-    out property <[LearnItem]> desk: [docs, keys, code, report];
-    out property <[LearnItem]> phone: [docs, code, report];
+    out property <[LearnItem]> desk: [docs, keys, report];
+    out property <[LearnItem]> phone: [docs, report];
 }
 
 // The learn cards as a grid of rows, for the wide page under the projects

@@ -285,7 +285,7 @@ fn now() -> u64 {
 
 // ── ClipCut's own sounds ─────────────────────────────────────────────────
 
-/// The ClipCut shelf's manifest, as `concatapp/assets/audio/manifest.json`
+/// The ClipCut shelf's manifest, as `Realestkai/ClipCut/audio/manifest.json`
 /// has it; the schema is `docs/AUDIO_LIBRARY.md`.
 #[derive(Serialize, Deserialize, Clone, Debug, Default, PartialEq)]
 pub struct Catalogue {

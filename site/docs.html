@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ClipCut documentation</title>
+  <meta name="description" content="How to install ClipCut, make your first edit, add captions, export, update and automate.">
+  <meta property="og:title" content="ClipCut documentation">
+  <meta property="og:description" content="How to install ClipCut, make your first edit, add captions, export, update and automate.">
+  <meta property="og:image" content="assets/icon.png">
+  <link rel="icon" href="assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;650;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="wrap">
+      <a class="brand" href="./"><img src="assets/wordmark.png" alt="ClipCut"></a>
+      <nav class="nav">
+        <a href="./#download">Download</a>
+        <a href="docs.html" class="here">Docs</a>
+        <a href="whats-new.html">What's new</a>
+        <a href="report.html">Report a problem</a>
+      </nav>
+    </div>
+  </header>
+  <main class="page">
+    <div class="wrap">
+      <h1>Documentation</h1>
+      <p class="lead">The short version of everything you need to get going.</p>
+      <div class="doc">
+        <nav class="toc">
+          <a href="#install">Install</a>
+          <a href="#first-edit">Your first edit</a>
+          <a href="#captions">Captions and voices</a>
+          <a href="#export">Export</a>
+          <a href="#shortcuts">Shortcuts</a>
+          <a href="#updates">Updates</a>
+          <a href="#automation">Automation</a>
+          <a href="#privacy">Privacy</a>
+        </nav>
+        <div class="prose">
+          <h2 id="install">Install</h2>
+          <p><a href="./#download">Download</a> the file for your computer.</p>
+          <ul>
+            <li><strong>Windows:</strong> run the <code>setup.exe</code>. ClipCut is not code-signed yet, so Windows SmartScreen may stop it: press <strong>More info</strong>, then <strong>Run anyway</strong>.</li>
+            <li><strong>Mac:</strong> open the <code>.dmg</code> and drag ClipCut into Applications. If macOS refuses to open it, run this once in Terminal:<br><code>xattr -dr com.apple.quarantine /Applications/ClipCut.app</code></li>
+          </ul>
+          <p>Pick <em>Apple silicon</em> for an M1 or newer Mac, and <em>Intel</em> for an older one. Not sure? Apple menu &rsaquo; About This Mac says which chip you have.</p>
+
+          <h2 id="first-edit">Your first edit</h2>
+          <ol>
+            <li>Open ClipCut and start a new project from the launch screen.</li>
+            <li>Drag videos, photos and music into the media panel, then onto the timeline.</li>
+            <li>Move the playhead to where a cut should be and split the clip. Drag a clip's edges to trim it.</li>
+            <li>Stack clips on higher tracks for overlays and picture-in-picture.</li>
+            <li>Add titles, effects, filters and transitions from the library and adjust them in the inspector.</li>
+            <li>Press export when it looks right.</li>
+          </ol>
+          <div class="note">Projects save to your own disk. Nothing is uploaded anywhere.</div>
+
+          <h2 id="captions">Captions and voices</h2>
+          <p>Captions, text-to-speech and background removal run on AI models that live on your computer. They are not bundled with the installer, to keep it small: download the ones you want once from <strong>Settings</strong> (the <strong>Transcriber</strong> and <strong>Speech</strong> pages), and they work offline from then on.</p>
+          <p>Bigger caption models are more accurate and slower. Start with a small one and move up if it mishears.</p>
+
+          <h2 id="export">Export</h2>
+          <p>ClipCut exports H.264, HEVC and AV1, up to 4K at 60 frames per second, with 10-bit colour where the format allows. For social media, H.264 at the resolution you shot in is the safe choice.</p>
+
+          <h2 id="shortcuts">Shortcuts</h2>
+          <p>Every key is listed, and can be changed, in <strong>Settings &rsaquo; Shortcuts</strong>.</p>
+
+          <h2 id="updates">Updates</h2>
+          <p>Open <strong>Settings &rsaquo; Version</strong> and press <strong>Check for updates</strong>. ClipCut downloads the new version, checks it is intact and installs it over the one you are running. The same page lets you go back to an earlier version. <a href="whats-new.html">What's new</a> lists what each version changed.</p>
+
+          <h2 id="automation">Automation</h2>
+          <p>ClipCut can be driven by scripts and AI agents. Turn it on in <strong>Settings &rsaquo; Automation</strong>: it listens on your own computer only (<code>127.0.0.1</code>) and answers only callers that hold its token. AI agents connect over MCP by starting the app with <code>--mcp</code>.</p>
+
+          <h2 id="privacy">Privacy</h2>
+          <p>There is no account and no telemetry. ClipCut reaches the network only when you ask it to: checking for updates, downloading a model, or turning Automation on.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer>
+    <div class="wrap">
+      <span>ClipCut is free software under AGPL-3.0-or-later.</span>
+      <span class="right">
+        <a href="docs.html">Docs</a>
+        <a href="whats-new.html">What's new</a>
+        <a href="report.html">Report a problem</a>
+        <a href="https://github.com/Realestkai/ClipCut">Source code</a>
+      </span>
+    </div>
+  </footer>
+  <script src="site.js"></script>
+</body>
+</html>

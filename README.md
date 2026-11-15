@@ -12,7 +12,7 @@
 
 ## Download
 
-**[Get the latest release](https://github.com/Realestkai/ClipCut/releases/latest)** and pick the file for your computer:
+**[realestkai.github.io/ClipCut](https://realestkai.github.io/ClipCut/)** has the download buttons, the docs and what is new in each version. Or **[get the latest release](https://github.com/Realestkai/ClipCut/releases/latest)** and pick the file for your computer:
 
 | Your computer | File to download |
 |---|---|

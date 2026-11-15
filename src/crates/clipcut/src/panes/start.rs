@@ -94,21 +94,24 @@ pub fn shown<'a>(
     shown
 }
 
+/// The website: the downloads, the documentation, what is new.
+const SITE: &str = "https://realestkai.github.io/ClipCut";
 /// The repository: the code, the issues, the releases.
 pub const REPOSITORY: &str = "https://github.com/Realestkai/ClipCut";
 
 /// Where each of the launch screen's links goes, by the name the screen
 /// sends. One table, so a moved page is one line here. Every address is a
-/// page of the repository's, and None for a name nobody sends.
+/// page of the website's or the repository's, and None for a name nobody sends.
 /// "shortcuts" is not here: it opens Settings, not a page.
 pub fn link(name: &str) -> Option<String> {
     Some(match name {
-        "guides" => format!("{REPOSITORY}#readme"),
-        "first-edit" => format!("{REPOSITORY}#readme"),
-        "report" => format!("{REPOSITORY}/issues/new"),
+        "guides" => format!("{SITE}/docs.html"),
+        "first-edit" => format!("{SITE}/docs.html#first-edit"),
+        "report" => format!("{SITE}/report.html"),
         "github" => REPOSITORY.to_owned(),
-        // The gradient card: this version's release notes.
-        "news" => format!("{REPOSITORY}/releases/tag/v{}", env!("CARGO_PKG_VERSION")),
+        // The gradient card: the website's page of what each version
+        // changed, at this version's entry.
+        "news" => format!("{SITE}/whats-new.html#v{}", env!("CARGO_PKG_VERSION")),
         // The notes for the release this build is, under the tag the
         // release workflow pushes.
         "release-notes" => format!("{REPOSITORY}/releases/tag/v{}", env!("CARGO_PKG_VERSION")),

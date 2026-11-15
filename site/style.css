@@ -1,0 +1,140 @@
+:root {
+  --bg: #0e0e10;
+  --panel: #17171a;
+  --panel-2: #1f1f23;
+  --line: #2a2a30;
+  --text: #f4f4f5;
+  --muted: #a1a1aa;
+  --accent: #cbf53f;
+  --accent-ink: #12140a;
+  --radius: 18px;
+  --max: 1080px;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.6 "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.wrap { max-width: var(--max); margin: 0 auto; padding: 0 20px; }
+
+/* ── top bar ─────────────────────────────────────────────── */
+.top {
+  position: sticky; top: 0; z-index: 10;
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+.top .wrap { display: flex; align-items: center; gap: 24px; height: 64px; }
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand img { height: 26px; display: block; }
+.nav { margin-left: auto; display: flex; gap: 22px; flex-wrap: wrap; }
+.nav a { color: var(--muted); font-weight: 500; font-size: 15px; }
+.nav a:hover, .nav a.here { color: var(--text); text-decoration: none; }
+
+/* ── hero ────────────────────────────────────────────────── */
+.hero { text-align: center; padding: 84px 0 56px; position: relative; overflow: hidden; }
+.hero::before {
+  content: ""; position: absolute; inset: -40% -10% auto; height: 520px; z-index: -1;
+  background:
+    radial-gradient(40% 60% at 30% 40%, rgba(244, 63, 94, .35), transparent 70%),
+    radial-gradient(40% 60% at 70% 30%, rgba(124, 58, 237, .38), transparent 70%),
+    radial-gradient(30% 50% at 50% 70%, rgba(251, 146, 60, .25), transparent 70%);
+  filter: blur(30px);
+}
+.hero .mark { width: 92px; height: 92px; border-radius: 22px; }
+.hero h1 {
+  font-size: clamp(36px, 6vw, 64px); line-height: 1.05; letter-spacing: -0.03em;
+  margin: 26px auto 14px; max-width: 14ch;
+}
+.hero p.lead { color: var(--muted); font-size: clamp(17px, 2.2vw, 20px); max-width: 56ch; margin: 0 auto 30px; }
+
+.buttons { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 14px 22px; border-radius: 14px; font-weight: 650; font-size: 16px;
+  border: 1px solid var(--line); background: var(--panel-2); color: var(--text);
+  transition: transform .12s ease, background .12s ease;
+}
+.btn:hover { text-decoration: none; transform: translateY(-1px); background: #26262b; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.btn.primary:hover { background: #d8ff55; }
+.btn small { font-weight: 500; opacity: .75; }
+.under { color: var(--muted); font-size: 14px; margin-top: 16px; }
+
+/* ── sections ────────────────────────────────────────────── */
+section { padding: 56px 0; }
+h2 { font-size: clamp(26px, 3.4vw, 36px); letter-spacing: -0.02em; margin: 0 0 8px; }
+.sub { color: var(--muted); margin: 0 0 28px; max-width: 60ch; }
+
+.grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.card {
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 22px;
+}
+.card h3 { margin: 0 0 6px; font-size: 18px; }
+.card p { margin: 0; color: var(--muted); font-size: 15px; }
+.card .ico { font-size: 22px; margin-bottom: 10px; display: block; }
+
+.steps { counter-reset: step; display: grid; gap: 14px; }
+.steps .card { position: relative; padding-left: 64px; }
+.steps .card::before {
+  counter-increment: step; content: counter(step);
+  position: absolute; left: 20px; top: 20px; width: 30px; height: 30px; border-radius: 50%;
+  background: var(--accent); color: var(--accent-ink); font-weight: 700;
+  display: grid; place-items: center; font-size: 14px;
+}
+
+/* ── article pages ───────────────────────────────────────── */
+.page { padding: 48px 0 80px; }
+.page h1 { font-size: clamp(32px, 5vw, 46px); letter-spacing: -0.03em; margin: 0 0 6px; }
+.page .lead { color: var(--muted); font-size: 18px; margin: 0 0 34px; max-width: 62ch; }
+.doc { display: grid; grid-template-columns: 220px 1fr; gap: 40px; align-items: start; }
+.toc { position: sticky; top: 88px; display: grid; gap: 4px; font-size: 15px; }
+.toc a { color: var(--muted); padding: 6px 10px; border-radius: 8px; }
+.toc a:hover { color: var(--text); background: var(--panel); text-decoration: none; }
+.prose h2 { font-size: 24px; margin: 40px 0 10px; padding-top: 8px; scroll-margin-top: 80px; }
+.prose h2:first-child { margin-top: 0; }
+.prose p, .prose li { color: #d4d4d8; }
+.prose ul, .prose ol { padding-left: 22px; }
+.prose li { margin: 6px 0; }
+.prose code, kbd {
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px;
+  padding: 1px 6px; font: 14px ui-monospace, "Cascadia Code", Menlo, monospace;
+}
+.note {
+  border-left: 3px solid var(--accent); background: var(--panel);
+  padding: 12px 16px; border-radius: 0 12px 12px 0; margin: 16px 0; color: #d4d4d8;
+}
+
+/* ── what's new ──────────────────────────────────────────── */
+.release { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; margin-bottom: 16px; scroll-margin-top: 84px; }
+.release h2 { font-size: 24px; margin: 0; }
+.release .when { color: var(--muted); font-size: 14px; margin: 2px 0 12px; }
+.release h3 { font-size: 16px; margin: 18px 0 6px; }
+.release ul { padding-left: 22px; margin: 6px 0; }
+.release li { color: #d4d4d8; margin: 4px 0; }
+.tag { display: inline-block; background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: 12px; padding: 2px 8px; border-radius: 999px; margin-left: 8px; vertical-align: middle; }
+
+/* ── footer ──────────────────────────────────────────────── */
+footer { border-top: 1px solid var(--line); padding: 28px 0 40px; color: var(--muted); font-size: 14px; }
+footer .wrap { display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
+footer a { color: var(--muted); }
+footer .right { margin-left: auto; display: flex; gap: 18px; flex-wrap: wrap; }
+
+@media (max-width: 760px) {
+  .doc { grid-template-columns: 1fr; gap: 16px; }
+  .toc { position: static; grid-auto-flow: column; overflow-x: auto; }
+  .nav { gap: 14px; }
+  .hero { padding-top: 56px; }
+}
