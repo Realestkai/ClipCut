@@ -77,15 +77,10 @@ cargo fmt --check && cargo clippy --all-targets -- -D warnings   # what CI check
 
 ## Releasing a new version
 
-1. Bump `version` in `src/Cargo.toml` (and run `cargo check` in `src/` so `Cargo.lock` follows).
-2. Commit, then tag and push:
+1. Change `version` near the top of `src/Cargo.toml` (for example `0.2.11` to `0.2.12`).
+2. Commit and push to `main`.
 
-   ```sh
-   git tag v<version>
-   git push origin main v<version>
-   ```
-
-GitHub Actions builds the Windows installer and both Mac disk images, launches each one to check it starts, and publishes them as a release. Every installed copy of ClipCut offers the new version from then on.
+GitHub Actions builds the Windows installer and both Mac disk images, launches each one to check it starts, and publishes them as a release tagged `v<version>`. Every installed copy of ClipCut offers the new version from then on. A push that does not change the version releases nothing.
 
 ## Licence
 

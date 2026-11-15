@@ -1,16 +1,18 @@
 name: Release
 
-# Pushing a tag that starts with v (v0.3.0, v0.3.0-alpha.1, ...) builds
-# ClipCut for macOS (Apple silicon and Intel) and Windows, and publishes a
-# GitHub release under that tag with one installer per target, a
-# manifest.json and a checksum file. A tag containing a hyphen is a
-# pre-release. The tag must be the workspace's version, alone or with a
-# pre-release suffix: a release whose files say one number and whose tag
-# says another is a release nobody can reason about.
+# A push to main that changes the version in src/Cargo.toml is a release:
+# this builds ClipCut for macOS (Apple silicon and Intel) and Windows and
+# publishes a GitHub release tagged v<version>, with one installer per
+# target, a manifest.json and a checksum file. A push that leaves the
+# version at one already released builds nothing.
 #
-# To ship a new version: bump `version` in src/Cargo.toml, commit, then
+# To ship a new version: change `version` in src/Cargo.toml, commit, push.
 #
-#   git tag v<version> && git push origin main v<version>
+# It runs on main, not on a tag, so that every release shares one build
+# cache: GitHub lets a run read the caches of its own ref and of the
+# default branch only, so a run on a tag starts cold every time, and a
+# cold build is most of an hour. On main the dependencies - Skia, Slint,
+# whisper, the FFmpeg bindings - are compiled once and reused.
 #
 # The bundles are self-contained: the macOS .dmg carries its FFmpeg dylibs
 # and is notarised when the signing secrets are set (ad-hoc signed
@@ -27,71 +29,55 @@ name: Release
 # the new version from then on.
 on:
   push:
-    tags: ["v*"]
+    branches: [main]
+    paths:
+      - src/Cargo.toml
+  # By hand, from the Actions page: releases the version on main if it has
+  # not been released yet. For a release whose run failed.
   workflow_dispatch:
-    inputs:
-      tag:
-        description: An existing tag to build and publish, e.g. v0.3.0
-        required: true
 
 concurrency:
-  group: release-${{ github.ref }}
+  group: release
   cancel-in-progress: false
 
 jobs:
   check:
-    name: Tag matches the version
+    name: Is this version released yet
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     outputs:
-      tag: ${{ steps.tag.outputs.tag }}
-      version: ${{ steps.tag.outputs.version }}
+      tag: ${{ steps.version.outputs.tag }}
+      version: ${{ steps.version.outputs.version }}
+      release: ${{ steps.version.outputs.release }}
     steps:
-      # The tag a person typed is checked before anything uses it: as the
-      # ref to check out, in a script, or in a file name.
-      - name: The tag is a version tag
-        env:
-          TAG: ${{ inputs.tag || github.ref_name }}
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - id: version
         run: |
-          if ! [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]]; then
-            echo "::error::'$TAG' is not a version tag (v1.2.3, or v1.2.3-alpha.1)"
+          set -euo pipefail
+          version=$(sed -n 's/^version = "\(.*\)"/\1/p' src/Cargo.toml | head -1)
+          if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::src/Cargo.toml's version '$version' is not three numbers (1.2.3)"
             exit 1
           fi
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ inputs.tag || github.ref }}
-      # The tag comes in through the environment, never pasted into the
-      # script: a value in ${{ }} is spliced into the shell's text before
-      # bash reads it, so a tag typed into the form by hand could have run
-      # as a command.
-      - id: tag
-        env:
-          TAG: ${{ inputs.tag || github.ref_name }}
-        run: |
-          tag="$TAG"
-          version=$(sed -n 's/^version = "\(.*\)"/\1/p' src/Cargo.toml | head -1)
-          # The tag is the version, or the version with a pre-release
-          # suffix: v0.2.1 and v0.2.1-alpha.22 both belong to 0.2.1.
-          case "$tag" in
-            "v$version" | "v$version-"*) ;;
-            *)
-              echo "tag $tag does not match src/Cargo.toml version $version" >&2
-              exit 1
-              ;;
-          esac
+          tag="v$version"
+          if git ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null; then
+            echo "$tag is already released: nothing to build."
+            echo "release=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "$tag is not released yet: building it."
+            echo "release=true" >> "$GITHUB_OUTPUT"
+          fi
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
-          # The bundles are named for the version, not the tag: v0.2.1 and
-          # v0.2.1-alpha.22 both produce ClipCut-0.2.1-* files.
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
-  # Both builds are told the tag too. Left to themselves they build the
-  # ref the run started on, and a run started by hand starts on main:
-  # 0.2.6 shipped that way, 35 commits past the tag it was named for.
+  # The commit this run started on, named outright, so the bundles and the
+  # tag the release creates are the same tree.
   build:
     needs: check
+    if: needs.check.outputs.release == 'true'
     uses: ./.github/workflows/build-app.yml
     with:
-      ref: ${{ needs.check.outputs.tag }}
+      ref: ${{ github.sha }}
     secrets: inherit
 
   publish:
@@ -112,7 +98,7 @@ jobs:
       # history, and the manifest out of its model table.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ needs.check.outputs.tag }}
+          ref: ${{ github.sha }}
           fetch-depth: 0
           path: source
 
@@ -140,11 +126,7 @@ jobs:
           ls -l
           sha256sum -- * > SHA256SUMS
 
-      # The notes are the commits since the previous tag; see the script.
-      # For a release, the previous tag is the previous release: its own
-      # candidates (v0.2.7-rc.2 before v0.2.7) are ancestors too, and from
-      # the last of them the notes would be the handful of fixes it took to
-      # get the candidate through, not what changed since 0.2.6.
+      # The notes are the commits since the previous release; see the script.
       - name: Write the notes
         id: notes
         env:
@@ -156,12 +138,10 @@ jobs:
           set -euo pipefail
           cd source
           tag="$TAG"
-          case "$tag" in
-            *-*) candidates=() ;;
-            *) candidates=(--exclude 'v*-*') ;;
-          esac
-          previous=$(git describe --tags --abbrev=0 --match 'v*' "${candidates[@]}" "$tag^" 2>/dev/null || git rev-list --max-parents=0 HEAD | tail -1)
-          .github/release-notes.sh "$previous" "$tag" "${tag#v}" > "$RUNNER_TEMP/notes.md"
+          # The tag does not exist yet - publishing creates it - so the
+          # notes run from the last release's tag to this commit.
+          previous=$(git describe --tags --abbrev=0 --match 'v*' HEAD 2>/dev/null || git rev-list --max-parents=0 HEAD | tail -1)
+          .github/release-notes.sh "$previous" HEAD "${tag#v}" > "$RUNNER_TEMP/notes.md"
           cat "$RUNNER_TEMP/notes.md"
 
       # Published as soon as it is built: the updater in every installed
@@ -170,10 +150,11 @@ jobs:
       - uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           tag_name: ${{ needs.check.outputs.tag }}
+          # The tag is created here, on the commit that was built.
+          target_commitish: ${{ github.sha }}
           name: ClipCut ${{ needs.check.outputs.tag }}
           draft: false
-          make_latest: ${{ !contains(needs.check.outputs.tag, '-') }}
-          prerelease: ${{ contains(needs.check.outputs.tag, '-') }}
+          make_latest: true
           body_path: ${{ runner.temp }}/notes.md
           fail_on_unmatched_files: true
           files: bundles/*
