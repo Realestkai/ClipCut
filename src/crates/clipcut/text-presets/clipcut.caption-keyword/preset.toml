@@ -1,0 +1,20 @@
+id = "clipcut.caption-keyword"
+name = "Keyword"
+language = "Latin"
+order = 102
+offsetY = 0.3
+
+[style]
+content = "Make the word pop"
+fontFamily = "Montserrat"
+fontWeight = 800
+fontSize = 0.06
+strokeWidth = 0.01
+strokeColor = "#000000"
+
+[[style.runs]]
+start = 9
+end = 13
+color = "#39ff88"
+fontWeight = 900
+fontScale = 1.15

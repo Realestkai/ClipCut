@@ -1,0 +1,13 @@
+id = "clipcut.subtitle-cinema"
+name = "Cinema subtitle"
+language = "Latin"
+order = 108
+offsetY = 0.38
+
+[style]
+content = "Cinema subtitle"
+fontFamily = "DM Serif Display"
+fontWeight = 400
+italic = true
+fontSize = 0.046
+color = "#f4e9c9"

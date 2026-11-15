@@ -1,0 +1,13 @@
+id = "clipcut.neon-cyan"
+name = "Neon cyan"
+language = "Latin"
+order = 131
+
+[style]
+content = "Neon cyan"
+fontFamily = "Space Grotesk"
+fontWeight = 700
+fontSize = 0.1
+color = "#e6fdff"
+strokeWidth = 0.008
+strokeColor = "#00d8ff"

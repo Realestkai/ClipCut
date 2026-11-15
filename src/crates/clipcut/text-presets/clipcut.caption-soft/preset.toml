@@ -1,0 +1,11 @@
+id = "clipcut.caption-soft"
+name = "Soft shadow"
+language = "Latin"
+order = 106
+offsetY = 0.3
+
+[style]
+content = "Soft shadow"
+fontFamily = "Hanken Grotesk"
+fontWeight = 500
+fontSize = 0.055

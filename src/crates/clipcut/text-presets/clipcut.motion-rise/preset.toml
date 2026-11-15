@@ -1,0 +1,18 @@
+id = "clipcut.motion-rise"
+name = "Rise"
+language = "Latin"
+order = 145
+
+[style]
+content = "Rise"
+fontFamily = "Hanken Grotesk"
+fontWeight = 600
+fontSize = 0.07
+
+[motion.in]
+kind = "rise"
+seconds = 0.6
+
+[motion.out]
+kind = "fade"
+seconds = 0.4

@@ -1,0 +1,11 @@
+id = "clipcut.minimal-serif"
+name = "Quiet serif"
+language = "Latin"
+order = 128
+
+[style]
+content = "Quiet serif"
+fontFamily = "DM Serif Display"
+fontWeight = 400
+fontSize = 0.07
+color = "#f5f1e8"

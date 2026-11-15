@@ -1,0 +1,13 @@
+id = "clipcut.retro-sunset"
+name = "Sunset"
+language = "Latin"
+order = 133
+
+[style]
+content = "Sunset"
+fontFamily = "Lobster"
+fontWeight = 400
+fontSize = 0.11
+color = "#ffb347"
+strokeWidth = 0.008
+strokeColor = "#7a1f3d"

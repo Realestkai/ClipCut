@@ -1,0 +1,15 @@
+id = "clipcut.caption-terminal"
+name = "Terminal caption"
+language = "Latin"
+order = 112
+offsetY = 0.3
+
+[style]
+content = "Terminal caption"
+fontFamily = "Google Sans Code"
+fontWeight = 400
+fontSize = 0.04
+color = "#7dff9b"
+background = "#0b0f0ce6"
+backgroundRadius = 0.006
+shadow = false

@@ -1,0 +1,20 @@
+id = "clipcut.motion-pop"
+name = "Pop in"
+language = "Latin"
+order = 143
+
+[style]
+content = "Pop in"
+fontFamily = "Montserrat"
+fontWeight = 900
+fontSize = 0.09
+strokeWidth = 0.01
+strokeColor = "#000000"
+
+[motion.in]
+kind = "pop"
+seconds = 0.35
+
+[motion.out]
+kind = "fade"
+seconds = 0.25

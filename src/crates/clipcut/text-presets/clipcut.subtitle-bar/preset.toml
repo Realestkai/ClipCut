@@ -1,0 +1,16 @@
+id = "clipcut.subtitle-bar"
+name = "Subtitle bar"
+language = "Latin"
+order = 116
+offsetY = 0.4
+
+[style]
+content = "Subtitle bar"
+fontFamily = "Inter"
+fontWeight = 400
+fontSize = 0.04
+background = "#000000b3"
+backgroundRadius = 0.0
+backgroundPaddingY = 0.02
+maxWidth = 1.0
+shadow = false

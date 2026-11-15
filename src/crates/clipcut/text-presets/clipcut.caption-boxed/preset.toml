@@ -1,0 +1,14 @@
+id = "clipcut.caption-boxed"
+name = "Boxed caption"
+language = "Latin"
+order = 109
+offsetY = 0.3
+
+[style]
+content = "Boxed caption"
+fontFamily = "Inter"
+fontWeight = 600
+fontSize = 0.048
+background = "#000000cc"
+backgroundRadius = 0.008
+shadow = false

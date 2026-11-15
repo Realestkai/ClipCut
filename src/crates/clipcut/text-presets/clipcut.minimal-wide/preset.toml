@@ -1,0 +1,12 @@
+id = "clipcut.minimal-wide"
+name = "Wide caps"
+language = "Latin"
+order = 127
+
+[style]
+content = "Wide caps"
+fontFamily = "Space Grotesk"
+fontWeight = 500
+fontSize = 0.034
+textCase = "upper"
+tracking = 0.022

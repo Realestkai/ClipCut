@@ -1,0 +1,14 @@
+id = "clipcut.retro-arcade"
+name = "Arcade"
+language = "Latin"
+order = 134
+
+[style]
+content = "Arcade"
+fontFamily = "Pixelify Sans"
+fontWeight = 400
+fontSize = 0.1
+textCase = "upper"
+color = "#ffe600"
+strokeWidth = 0.008
+strokeColor = "#2b1a7a"
