@@ -5,6 +5,78 @@
 use super::*;
 
 impl Studio {
+    // ── titles placed with a motion ──
+
+    /// Places a run of titles as one undo step, each with the motion named
+    /// beside it, and says how many were asked for. `titles` are
+    /// [`Command::AddTextClip`]s in the order they start in. A title is
+    /// placed without a motion - the command has no room for one - so the
+    /// motions follow as a second batch folded into the same step: one
+    /// undo takes the titles away, moves and all. With no motion at all
+    /// it is the plain batch it always was.
+    pub fn add_titles(
+        &mut self,
+        font: Option<Command>,
+        titles: Vec<(Command, Option<model::ClipMotion>)>,
+    ) -> usize {
+        static STEP: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+        let count = titles.len();
+        let (adds, motions): (Vec<Command>, Vec<Option<model::ClipMotion>>) =
+            titles.into_iter().unzip();
+        let batch = Command::Batch {
+            commands: font.into_iter().chain(adds).collect(),
+        };
+        if motions.iter().all(Option::is_none) {
+            self.apply(batch);
+            return count;
+        }
+        // A name no other step has, so two runs one after the other are
+        // two steps.
+        let gesture = format!(
+            "titles-{}",
+            STEP.fetch_add(1, std::sync::atomic::Ordering::Relaxed)
+        );
+        let held: HashSet<String> = self
+            .timeline()
+            .clips
+            .iter()
+            .map(|clip| clip.id.clone())
+            .collect();
+        self.apply_within(&gesture, batch);
+        let mut placed: Vec<(f64, String)> = self
+            .timeline()
+            .clips
+            .iter()
+            .filter(|clip| clip.kind == model::ClipKind::Text && !held.contains(&clip.id))
+            .map(|clip| (clip.start, clip.id.clone()))
+            .collect();
+        placed.sort_by(|a, b| a.0.total_cmp(&b.0));
+        // One refused, or moved past its neighbour: which motion is whose
+        // is no longer known, and a still title beats a wrong move.
+        if placed.len() != count {
+            log::warn!(
+                "titles: {} of {count} were placed; their motions were left off",
+                placed.len()
+            );
+            return count;
+        }
+        let commands: Vec<Command> = placed
+            .into_iter()
+            .zip(motions)
+            .filter_map(|((_, clip_id), motion)| {
+                motion.map(|motion| Command::UpdateClip {
+                    clip_id,
+                    patch: ClipPatch {
+                        motion: Some(Some(motion)),
+                        ..ClipPatch::default()
+                    },
+                })
+            })
+            .collect();
+        self.apply_within(&gesture, Command::Batch { commands });
+        count
+    }
+
     // ── fonts ──
 
     /// The families a title can be set in, in the order the picker shows

@@ -437,14 +437,25 @@ fn start(project: Option<std::path::PathBuf>, smoke: bool) -> Result<(), slint::
     motion_tiles::install(&app);
     // Windows puts a dialog's OK before its Cancel; macOS and Linux after.
     app.global::<Theme>().set_ok_first(cfg!(windows));
+    // The look is remembered by name, the way the accent is, and its
+    // names live on the Theme global too.
+    {
+        let theme = app.global::<Theme>();
+        let names = theme.get_look_names();
+        let index = studio
+            .prefs
+            .look_index(slint::Model::iter(&names).map(|name| name.to_string()));
+        theme.set_look_choice(index as i32);
+    }
     // The accent is remembered by name and the names live on the Theme
     // global, so the index is looked up there rather than kept in Rust too.
     // A remembered hex is a colour picked by hand, which is the slot past
-    // the names.
+    // the names. None remembered is the look's own.
     {
         let theme = app.global::<Theme>();
         let names = theme.get_accent_names();
         let count = slint::Model::row_count(&names);
+        theme.set_accent_from_look(studio.prefs.accent.is_none());
         match studio.prefs.custom_accent().and_then(format::parse_colour) {
             Some(colour) => {
                 theme.set_accent_custom(colour);
@@ -1640,6 +1651,22 @@ fn start(project: Option<std::path::PathBuf>, smoke: bool) -> Result<(), slint::
             state.prefs.caption_style = Some(id.to_string());
             state.prefs.save(&state.host.dirs);
         }));
+    app.global::<crate::ui::CaptionStyles>()
+        .on_wording_changed(on_window!(|state, index: i32| {
+            state.handle(Msg::Captions(CaptionsMsg::WordingChanged(index)));
+        }));
+    app.global::<crate::ui::CaptionStyles>()
+        .on_group_changed(on_window!(|state, index: i32| {
+            state.handle(Msg::Captions(CaptionsMsg::GroupChanged(index)));
+        }));
+    app.global::<crate::ui::CaptionStyles>()
+        .on_pop_toggled(on_window!(|state, on: bool| {
+            state.handle(Msg::Captions(CaptionsMsg::PopToggled(on)));
+        }));
+    app.global::<crate::ui::CaptionStyles>()
+        .on_restyle_all(on_window!(|state| {
+            state.handle(Msg::Captions(CaptionsMsg::RestyleAll));
+        }));
     app.global::<Meters>().on_clip_cleared({
         let weak = app.as_weak();
         move || {
@@ -2134,12 +2161,46 @@ fn start(project: Option<std::path::PathBuf>, smoke: bool) -> Result<(), slint::
             });
         }
     });
-    // The accent is the same shape of thing: one int on the Theme global,
-    // remembered under the name the global lists it by.
+    // The look is the same shape of thing: one int on the Theme global,
+    // remembered under the name the global lists it by. A look brings its
+    // own accent, so picking one forgets the accent that was picked.
+    app.on_settings_look_changed({
+        move |index| {
+            Shell::with(|shell, app| {
+                let theme = app.global::<Theme>();
+                let names = theme.get_look_names();
+                let Some(name) = usize::try_from(index)
+                    .ok()
+                    .and_then(|row| slint::Model::row_data(&names, row))
+                else {
+                    return;
+                };
+                log::info!("settings: Look {name}");
+                theme.set_look_choice(index);
+                theme.set_accent_from_look(true);
+                theme.set_accent_choice(0);
+                let mut studio = shell.studio.borrow_mut();
+                studio.prefs.look = (index > 0).then(|| prefs::Preferences::accent_id(&name));
+                studio.prefs.accent = None;
+                studio.prefs.save(&studio.host.dirs);
+            });
+        }
+    });
+    // The accent is the same again, remembered under the name the global
+    // lists it by; -1 gives it back to the look, and the file names none.
     app.on_settings_accent_changed({
         move |index| {
             Shell::with(|shell, app| {
                 let theme = app.global::<Theme>();
+                if index < 0 {
+                    log::info!("settings: Accent the look's own");
+                    theme.set_accent_from_look(true);
+                    theme.set_accent_choice(0);
+                    let mut studio = shell.studio.borrow_mut();
+                    studio.prefs.accent = None;
+                    studio.prefs.save(&studio.host.dirs);
+                    return;
+                }
                 let names = theme.get_accent_names();
                 let Some(name) = usize::try_from(index)
                     .ok()
@@ -2148,6 +2209,7 @@ fn start(project: Option<std::path::PathBuf>, smoke: bool) -> Result<(), slint::
                     return;
                 };
                 log::info!("settings: Accent {name}");
+                theme.set_accent_from_look(false);
                 theme.set_accent_choice(index);
                 let mut studio = shell.studio.borrow_mut();
                 studio.prefs.accent = Some(prefs::Preferences::accent_id(&name));
@@ -2165,6 +2227,7 @@ fn start(project: Option<std::path::PathBuf>, smoke: bool) -> Result<(), slint::
                 let count = slint::Model::row_count(&theme.get_accent_names());
                 // Every drag on the picker lands here: detail, not story.
                 log::debug!("settings: Accent {}", format::hex_of(colour));
+                theme.set_accent_from_look(false);
                 theme.set_accent_custom(colour);
                 theme.set_accent_choice(count as i32);
                 let mut studio = shell.studio.borrow_mut();

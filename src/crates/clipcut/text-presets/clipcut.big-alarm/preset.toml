@@ -1,0 +1,14 @@
+id = "clipcut.big-alarm"
+name = "Alarm"
+language = "Latin"
+order = 123
+
+[style]
+content = "Alarm"
+fontFamily = "Archivo Black"
+fontWeight = 400
+fontSize = 0.16
+textCase = "upper"
+color = "#ff2b2b"
+strokeWidth = 0.008
+strokeColor = "#ffffff"

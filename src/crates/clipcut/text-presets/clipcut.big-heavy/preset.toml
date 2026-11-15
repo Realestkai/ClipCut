@@ -1,0 +1,12 @@
+id = "clipcut.big-heavy"
+name = "Heavyweight"
+language = "Latin"
+order = 125
+
+[style]
+content = "Heavy"
+fontFamily = "Montserrat"
+fontWeight = 900
+fontSize = 0.15
+textCase = "upper"
+tracking = -0.004

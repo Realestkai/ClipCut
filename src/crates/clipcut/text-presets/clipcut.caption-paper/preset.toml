@@ -1,0 +1,15 @@
+id = "clipcut.caption-paper"
+name = "Paper caption"
+language = "Latin"
+order = 110
+offsetY = 0.3
+
+[style]
+content = "Paper caption"
+fontFamily = "Inter"
+fontWeight = 700
+fontSize = 0.048
+color = "#111111"
+background = "#ffffff"
+backgroundRadius = 0.008
+shadow = false

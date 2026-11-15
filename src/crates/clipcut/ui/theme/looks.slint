@@ -1,0 +1,117 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// SPDX-FileCopyrightText: 2026 ClipCut contributors
+
+// The looks: named retones of the two palettes, one of which Settings >
+// Appearance wears over whichever of Dark and Light is on.
+//
+// A look is not a third palette. It decides three things and nothing else:
+//
+//   - a tint for the surfaces. Every ground a palette lists - the ladder,
+//     the launch screen's ladder, the lanes, the page - is mixed towards
+//     the look's tint by the same amount, so the ladder keeps its order and
+//     only its hue and depth move. One tint per palette: a dark one under
+//     Dark, a pale one under Light, each chosen so text is at least as
+//     readable on the tinted grounds as on the plain ones.
+//   - an accent of its own, as a full `Accent` per palette, worn until an
+//     accent is picked from the row in Settings.
+//   - the colours of the launch screen's news card: its ground and the six
+//     lights that run together over it.
+//
+// What a look does not touch: text, hairlines, the media kinds, the meters,
+// the stage and anything else that means something by its colour, and every
+// size. A look is chosen by hand and stays until another is; none is put on
+// by the calendar.
+//
+// To add one: a row here, a name in `look-names` in theme.slint and a label
+// in the Settings dialog's `look-labels`, all at the same position.
+import { Accent } from "accent.slint";
+
+export struct Look {
+    /// What the dark palette's grounds are mixed towards, and how much of
+    /// the palette's own colour is kept: 1 is untouched.
+    dark-tint: color,
+    dark-keep: float,
+    /// The same for the light palette.
+    light-tint: color,
+    light-keep: float,
+    /// The look's own accent under each palette.
+    dark-tone: Accent,
+    light-tone: Accent,
+    /// The news card: its ground, and its six lights in the order
+    /// start.slint places them - left, top, middle, right, low right, low
+    /// left.
+    card: color,
+    glows: [color],
+}
+
+export global Looks {
+    out property <[Look]> all: [
+        // Default: the palettes as they are, the lime, and the card's warm
+        // light.
+        {
+            dark-tint: #000000, dark-keep: 1.0,
+            light-tint: #ffffff, light-keep: 1.0,
+            dark-tone: { accent: #cbf53f, hover: #d9ff63, soft: #cbf53f33, on: #15220a },
+            light-tone: { accent: #4d7c0f, hover: #3f680b, soft: #4d7c0f2e, on: #ffffff },
+            card: #e5475f,
+            glows: [#f8b640, #f06a3c, #e43fd6, #4a12d9, #3a0bc2, #5c0f3c],
+        },
+        // Midnight: deeper blacks with a cold cast, and a cool blue.
+        {
+            dark-tint: #05070f, dark-keep: 0.5,
+            light-tint: #dce4f5, light-keep: 0.55,
+            dark-tone: { accent: #7aa2ff, hover: #9bb9ff, soft: #7aa2ff33, on: #0a1838 },
+            light-tone: { accent: #2f55c8, hover: #2747a8, soft: #2f55c82e, on: #ffffff },
+            card: #2b3f9e,
+            glows: [#5b8cff, #3a5bd9, #7a4dff, #1b1f7a, #0d1050, #0a0c2e],
+        },
+        // Sunset: the news card's coral running into violet, as a room.
+        {
+            dark-tint: #2b0f22, dark-keep: 0.62,
+            light-tint: #fbe3dc, light-keep: 0.55,
+            dark-tone: { accent: #ff7a59, hover: #ff957a, soft: #ff7a5933, on: #3a0f04 },
+            light-tone: { accent: #c2391a, hover: #a53016, soft: #c2391a2e, on: #ffffff },
+            card: #e5475f,
+            glows: [#f8b640, #f06a3c, #e43fd6, #4a12d9, #3a0bc2, #5c0f3c],
+        },
+        // Ocean: deep water, and the blue of the shallows.
+        {
+            dark-tint: #06233f, dark-keep: 0.62,
+            light-tint: #d9eaf9, light-keep: 0.55,
+            dark-tone: { accent: #38c6f4, hover: #66d4f7, soft: #38c6f433, on: #03202e },
+            light-tone: { accent: #0b6aa3, hover: #095a8a, soft: #0b6aa32e, on: #ffffff },
+            card: #1583b8,
+            glows: [#3fe0d0, #2aa9e0, #2d7ff0, #1240b0, #0a2a80, #06304a],
+        },
+        // Forest: moss and pine, with a leaf's green.
+        {
+            dark-tint: #0e2a18, dark-keep: 0.62,
+            light-tint: #dfeedd, light-keep: 0.55,
+            dark-tone: { accent: #7ddc8a, hover: #9ae6a4, soft: #7ddc8a33, on: #0a2610 },
+            light-tone: { accent: #2b7438, hover: #24622f, soft: #2b74382e, on: #ffffff },
+            card: #3f8f4a,
+            glows: [#c9d94a, #6fbf4a, #2fa36a, #0f6a4a, #0a4a38, #2a3a0f],
+        },
+        // Mono: no hue at all in the interface, and the most contrast of
+        // any - nearer black under Dark, nearer white under Light, with
+        // the ink itself for an accent.
+        {
+            dark-tint: #000000, dark-keep: 0.62,
+            light-tint: #ffffff, light-keep: 0.5,
+            dark-tone: { accent: #ffffff, hover: #e4e4e8, soft: #ffffff2e, on: #000000 },
+            light-tone: { accent: #111111, hover: #000000, soft: #11111126, on: #ffffff },
+            card: #5a5a5e,
+            glows: [#8a8a8e, #6e6e73, #4a4a4e, #2a2a2d, #1c1c1f, #101012],
+        },
+        // Christmas: deep green, red and a warm gold. A look like any
+        // other - picked, never switched on by the date.
+        {
+            dark-tint: #0a2c18, dark-keep: 0.58,
+            light-tint: #e2f0e2, light-keep: 0.55,
+            dark-tone: { accent: #f2c14e, hover: #f7d27a, soft: #f2c14e33, on: #2a1c00 },
+            light-tone: { accent: #8f5e00, hover: #774e00, soft: #8f5e002e, on: #ffffff },
+            card: #b3202a,
+            glows: [#f2c14e, #e0452f, #c21f3a, #0f6a3a, #0a4a2a, #5c0f1a],
+        },
+    ];
+}

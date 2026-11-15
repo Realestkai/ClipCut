@@ -1,0 +1,22 @@
+id = "clipcut.motion-swing"
+name = "Swing in"
+language = "Latin"
+order = 147
+
+[style]
+content = "Swing in"
+fontFamily = "Archivo Black"
+fontWeight = 400
+fontSize = 0.08
+color = "#111111"
+background = "#ffd23f"
+backgroundRadius = 0.006
+shadow = false
+
+[motion.in]
+kind = "swing"
+seconds = 0.7
+
+[motion.out]
+kind = "fade"
+seconds = 0.3

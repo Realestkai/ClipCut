@@ -1,0 +1,19 @@
+id = "clipcut.big-stacked"
+name = "Stacked headline"
+language = "Latin"
+order = 124
+
+[style]
+content = "Stacked\nheadline"
+fontFamily = "Bebas Neue"
+fontWeight = 400
+fontSize = 0.16
+textCase = "upper"
+lineHeight = 0.95
+strokeWidth = 0.006
+strokeColor = "#000000"
+
+[[style.runs]]
+start = 8
+end = 16
+color = "#ffe600"

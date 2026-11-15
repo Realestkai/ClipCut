@@ -21,6 +21,15 @@ export global CaptionStyles {
     in property <TextPresetData> current;
     callback query-changed(text: string);
     callback picked(id: string);
+    /// How a line's words are shown: 0 the line, 1 a few words at a
+    /// time, 2 the line with the word being said marked.
+    callback wording-changed(index: int);
+    /// Words to a caption, as a row: 0 is one, 2 is three.
+    callback group-changed(index: int);
+    /// Captions pop on, or do not.
+    callback pop-toggled(on: bool);
+    /// Every caption on the captions' lane, set in `current`.
+    callback restyle-all();
 }
 
 // Captions: what the tray's Captions tool opens.
@@ -66,6 +75,12 @@ export struct CaptionsSheetData {
     placement: int,
     /// 0 Small, 1 Medium, 2 Large
     size: int,
+    /// 0 the line, 1 a few words at a time, 2 the spoken word marked
+    wording: int,
+    /// Words to a caption under `wording` 1: 0 is one, 2 is three
+    group: int,
+    /// Captions pop on.
+    pop: bool,
     running: bool,
     /// 0..1: where the transcription surely is.
     progress: float,
@@ -257,6 +272,48 @@ export component CaptionsForm inherits VerticalLayout {
                 }
             }
 
+            // How a line's words are shown: whole, a few at a time, or
+            // whole with the word being said marked. The same answers
+            // from the phone's sheet and the desk's page, so they go
+            // through the global the style does.
+            DialogRow {
+                label: I18n.t("captions.show");
+                SegmentedControl {
+                    options: [
+                        I18n.t("captions.wordingLines"),
+                        I18n.t("captions.wordingWords"),
+                        I18n.t("captions.wordingHighlight"),
+                    ];
+                    current: root.data.wording;
+                    changed(index) => { CaptionStyles.wording-changed(index); }
+                }
+            }
+
+            if root.data.wording == 1: DialogRow {
+                label: I18n.t("captions.wordsAtATime");
+                SegmentedControl {
+                    options: ["1", "2", "3"];
+                    current: root.data.group;
+                    changed(index) => { CaptionStyles.group-changed(index); }
+                }
+            }
+
+            DialogRow {
+                label: I18n.t("captions.entrance");
+                SegmentedControl {
+                    options: [I18n.t("captions.entranceNone"), I18n.t("captions.entrancePop")];
+                    current: root.data.pop ? 1 : 0;
+                    changed(index) => { CaptionStyles.pop-toggled(index == 1); }
+                }
+            }
+
+            if root.data.wording != 0: Text {
+                text: I18n.t("captions.wordTimingEstimated");
+                color: Theme.fg-dim;
+                font-size: Theme.fs-sm;
+                wrap: word-wrap;
+            }
+
             Text {
                 text: root.from-voice
                     ? I18n.t("captions.oneTitlePerPhrase")
@@ -390,6 +447,16 @@ export component CaptionsForm inherits VerticalLayout {
                     label: I18n.t("captions.exportSrt");
                     clicked => { root.export-srt(); }
                 }
+            }
+
+            // The picked style on every caption there already is: the
+            // selected title's lane, or the lane with the most titles.
+            if !root.data.running: Button {
+                block: true;
+                ghost: true;
+                glyph: Glyph.text-mark;
+                label: I18n.t("captions.restyleAll");
+                clicked => { CaptionStyles.restyle-all(); }
             }
         }
 }

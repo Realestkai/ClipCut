@@ -1,0 +1,15 @@
+id = "clipcut.caption-lime"
+name = "Lime street"
+language = "Latin"
+order = 103
+offsetY = 0.3
+
+[style]
+content = "Lime street"
+fontFamily = "Anton"
+fontWeight = 400
+fontSize = 0.075
+textCase = "upper"
+color = "#c6f432"
+strokeWidth = 0.009
+strokeColor = "#10160a"

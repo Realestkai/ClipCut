@@ -1,0 +1,19 @@
+id = "clipcut.motion-zoom"
+name = "Zoom in"
+language = "Latin"
+order = 146
+
+[style]
+content = "Zoom in"
+fontFamily = "Anton"
+fontWeight = 400
+fontSize = 0.12
+textCase = "upper"
+
+[motion.in]
+kind = "zoom-in"
+seconds = 0.4
+
+[motion.out]
+kind = "zoom-in"
+seconds = 0.4

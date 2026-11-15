@@ -1,0 +1,13 @@
+id = "clipcut.subtitle-classic"
+name = "Classic subtitle"
+language = "Latin"
+order = 107
+offsetY = 0.38
+
+[style]
+content = "Classic subtitle"
+fontFamily = "Inter"
+fontWeight = 600
+fontSize = 0.042
+strokeWidth = 0.004
+strokeColor = "#000000"

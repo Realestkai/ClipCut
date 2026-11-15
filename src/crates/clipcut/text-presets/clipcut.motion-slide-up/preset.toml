@@ -1,0 +1,18 @@
+id = "clipcut.motion-slide-up"
+name = "Slide up"
+language = "Latin"
+order = 141
+
+[style]
+content = "Slide up"
+fontFamily = "Montserrat"
+fontWeight = 800
+fontSize = 0.08
+
+[motion.in]
+kind = "slide-up"
+seconds = 0.45
+
+[motion.out]
+kind = "fade"
+seconds = 0.3

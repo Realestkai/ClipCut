@@ -1,0 +1,13 @@
+id = "clipcut.neon-pink"
+name = "Neon pink"
+language = "Latin"
+order = 130
+
+[style]
+content = "Neon pink"
+fontFamily = "Hammersmith One"
+fontWeight = 400
+fontSize = 0.1
+color = "#ffe3fa"
+strokeWidth = 0.008
+strokeColor = "#ff2bd1"

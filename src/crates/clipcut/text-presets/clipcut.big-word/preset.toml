@@ -1,0 +1,13 @@
+id = "clipcut.big-word"
+name = "Big word"
+language = "Latin"
+order = 122
+
+[style]
+content = "Big"
+fontFamily = "Anton"
+fontWeight = 400
+fontSize = 0.22
+textCase = "upper"
+strokeWidth = 0.01
+strokeColor = "#000000"

@@ -1,0 +1,13 @@
+id = "clipcut.neon-sign"
+name = "Neon sign"
+language = "Latin"
+order = 132
+
+[style]
+content = "Neon sign"
+fontFamily = "Lobster"
+fontWeight = 400
+fontSize = 0.11
+color = "#f3ffe0"
+strokeWidth = 0.007
+strokeColor = "#5cff2e"

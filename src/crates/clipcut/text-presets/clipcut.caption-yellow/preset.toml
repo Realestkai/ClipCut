@@ -1,0 +1,15 @@
+id = "clipcut.caption-yellow"
+name = "Yellow punch"
+language = "Latin"
+order = 101
+offsetY = 0.3
+
+[style]
+content = "Yellow punch"
+fontFamily = "Montserrat"
+fontWeight = 900
+fontSize = 0.065
+textCase = "upper"
+color = "#ffe600"
+strokeWidth = 0.012
+strokeColor = "#000000"
