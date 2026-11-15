@@ -36,9 +36,8 @@ CRATES = ROOT / "src" / "crates"
 
 # The repository the mirror lives on, and the engine constant that must
 # agree with this file about which release holds it.
-REPO = "jub0t/Concat"
-# ClipCut's repository: where its releases, and so its bundles, are.
-APP_REPO = "Realestkai/ClipCut"
+REPO = "Realestkai/ClipCut"
+APP_REPO = REPO
 HOST_MODELS = CRATES / "clipcut-host" / "src" / "models.rs"
 
 # Where each family's table lives in the engine, for --check.

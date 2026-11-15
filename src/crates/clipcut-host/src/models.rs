@@ -32,7 +32,7 @@ use crate::net::Cause;
 
 /// The repository the model mirror lives on. ClipCut's own releases are
 /// read from [`crate::updates::REPO`].
-pub const REPO: &str = "jub0t/Concat";
+pub const REPO: &str = "Realestkai/ClipCut";
 
 /// The release every model is mirrored on.
 ///
