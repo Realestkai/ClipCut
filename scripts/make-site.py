@@ -1,10 +1,19 @@
-"""Writes the site's four pages into site/, sharing one header and footer."""
+"""Writes the site's four pages into site/, sharing one header and footer.
+
+    python3 scripts/make-site.py    (from the repository root; needs Pillow)
+"""
 import pathlib
 import shutil
 
 SITE = pathlib.Path("site")
 (SITE / "assets").mkdir(parents=True, exist_ok=True)
-shutil.copy("assets/brand/clipcut-wordmark.png", SITE / "assets" / "wordmark.png")
+# The wordmark cropped to its letters, so the header shows it at full height.
+from PIL import Image
+
+_word = Image.open("assets/brand/clipcut-wordmark.png").convert("RGBA")
+_alpha = _word.getchannel("A").point(lambda a: 0 if a < 48 else a)
+_word.putalpha(_alpha)
+_word.crop(_alpha.getbbox()).save(SITE / "assets" / "wordmark.png")
 shutil.copy("assets/icons/clipcut_logo_256.png", SITE / "assets" / "icon.png")
 shutil.copy("assets/icons/clipcut_logo_64.png", SITE / "assets" / "favicon.png")
 
