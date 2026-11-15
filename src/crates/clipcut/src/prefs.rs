@@ -48,6 +48,11 @@ pub struct Preferences {
     /// `None`, or a name no longer on the list, is the first one, which is
     /// Lime.
     pub accent: Option<String>,
+    /// The look worn over the theme, by the lower-cased name the theme
+    /// lists it under - "midnight", "sunset", ... `None`, or a name no
+    /// longer on the list, is the first one, which is Default. While
+    /// `accent` is `None` the accent is the look's own.
+    pub look: Option<String>,
     /// The playhead's colour the accent's way: the lower-cased name of one
     /// of the accents - "sky", ... - worn as each palette has it, or
     /// "#rrggbb" for a colour picked by hand in Settings > Appearance.
@@ -220,6 +225,19 @@ impl Preferences {
     /// than to whatever happens to sit at its old position.
     pub fn accent_index(&self, names: impl IntoIterator<Item = impl AsRef<str>>) -> usize {
         let Some(wanted) = self.accent.as_deref().map(str::trim) else {
+            return 0;
+        };
+        names
+            .into_iter()
+            .position(|name| Self::accent_id(name.as_ref()) == wanted.to_lowercase())
+            .unwrap_or(0)
+    }
+
+    /// Which of `names` - the theme's looks, in its order - the remembered
+    /// look is: the first, Default, when none is remembered or the name is
+    /// one the list no longer has, as with the accent.
+    pub fn look_index(&self, names: impl IntoIterator<Item = impl AsRef<str>>) -> usize {
+        let Some(wanted) = self.look.as_deref().map(str::trim) else {
             return 0;
         };
         names
@@ -644,6 +662,32 @@ mod tests {
 
     /// A file from before the accent existed still loads, and reads as the
     /// default.
+    /// A look is remembered by name, whatever its case; none, or one the
+    /// list no longer has, is Default; and a file written before there
+    /// were looks reads as none.
+    #[test]
+    fn a_look_is_remembered_by_name_and_falls_back_to_the_first() {
+        const LOOKS: [&str; 3] = ["Default", "Midnight", "Christmas"];
+        assert_eq!(Preferences::default().look_index(LOOKS), 0);
+        for (spelled, row) in [("christmas", 2), (" Midnight ", 1), ("tinsel", 0)] {
+            let prefs = Preferences {
+                look: Some(spelled.to_owned()),
+                ..Preferences::default()
+            };
+            assert_eq!(prefs.look_index(LOOKS), row, "{spelled:?}");
+        }
+        let prefs = Preferences {
+            look: Some(Preferences::accent_id("Christmas")),
+            ..Preferences::default()
+        };
+        let text = serde_json::to_string(&prefs).unwrap();
+        assert!(text.contains(r#""look":"christmas""#), "{text}");
+        let back: Preferences = serde_json::from_str(&text).unwrap();
+        assert_eq!(back.look_index(LOOKS), 2);
+        let older: Preferences = serde_json::from_str(r#"{"dark":false}"#).unwrap();
+        assert_eq!(older.look, None);
+    }
+
     #[test]
     fn older_file_without_an_accent_is_the_default() {
         let back: Preferences = serde_json::from_str(r#"{"dark": false}"#).unwrap();

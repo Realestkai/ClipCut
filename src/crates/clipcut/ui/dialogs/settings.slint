@@ -400,6 +400,65 @@ component ModelRow inherits Rectangle {
     }
 }
 
+// One look on offer: a chip painted the way the look paints the window -
+// its panel for a ground, its card's light running across the far side,
+// and a dot of its accent - with the ring the accent's dot has while it is
+// the one in use.
+component LookSwatch inherits Rectangle {
+    in property <color> ground;
+    in property <color> accent;
+    in property <color> glow-from;
+    in property <color> glow-to;
+    /// The look's name, for whoever cannot see it.
+    in property <string> label;
+    in property <bool> chosen;
+
+    callback clicked();
+
+    width: 40px;
+    height: 30px;
+    border-radius: Theme.r;
+    border-width: 2px;
+    border-color: root.chosen ? Theme.fg
+        : touch.has-hover ? Theme.line-strong
+        : Colors.transparent;
+
+    accessible-role: button;
+    accessible-label: root.label;
+
+    animate border-color { duration: 120ms; easing: cubic-bezier(0.4, 0, 0.2, 1); }
+
+    Rectangle {
+        width: 30px;
+        height: 20px;
+        border-radius: Theme.r-xs;
+        border-width: 1px;
+        border-color: Theme.line-strong;
+        background: root.ground;
+        clip: true;
+
+        Rectangle {
+            x: parent.width * 0.45;
+            width: parent.width * 0.55;
+            background: @linear-gradient(135deg, root.glow-from 0%, root.glow-to 100%);
+        }
+
+        Rectangle {
+            x: 4px;
+            y: parent.height - self.height - 4px;
+            width: 6px;
+            height: 6px;
+            border-radius: 3px;
+            background: root.accent;
+        }
+    }
+
+    touch := TouchArea {
+        mouse-cursor: pointer;
+        clicked => { root.clicked(); }
+    }
+}
+
 // One accent on offer: a dot of the colour, and a ring round it while it is
 // the one in use. The ring is the text colour rather than the accent — the
 // dot already *is* the accent, and a ring in it would just be a bigger dot —
@@ -664,7 +723,10 @@ export component SettingsDialog inherits Sheet {
     /// say "the other one"; a page with two named options can say which one is
     /// on, which is the whole reason it moved in here.
     callback theme-changed(dark: bool);
-    /// The accent, as an index into `Theme.accent-names`.
+    /// The look, as an index into `Theme.look-names`.
+    callback look-changed(index: int);
+    /// The accent, as an index into `Theme.accent-names`; -1 is the
+    /// look's own, given back.
     callback accent-changed(index: int);
     /// A colour picked by hand in place of any on the list.
     callback accent-custom-changed(colour: color);
@@ -719,6 +781,13 @@ export component SettingsDialog inherits Sheet {
         I18n.t("settings.lime"), I18n.t("settings.sky"),
         I18n.t("settings.violet"), I18n.t("settings.rose"), I18n.t("settings.amber"),
         I18n.t("settings.mint"),
+    ];
+    /// `Theme.look-names` the same way, and for the same reason.
+    property <[string]> look-labels: [
+        I18n.t("settings.lookDefault"), I18n.t("settings.lookMidnight"),
+        I18n.t("settings.lookSunset"), I18n.t("settings.lookOcean"),
+        I18n.t("settings.lookForest"), I18n.t("settings.lookMono"),
+        I18n.t("settings.lookChristmas"),
     ];
 
     /// The window is a phone's. No Automation page then - the API on a socket
@@ -1112,6 +1181,39 @@ export component SettingsDialog inherits Sheet {
                     }
                 }
 
+                // The look: a named retone worn over the theme - a tint for
+                // the grounds, an accent of its own, and the colours of the
+                // launch screen's card (theme/looks.slint). Each chip is
+                // painted as its look would paint the window under the
+                // theme that is on, and the chosen one's name ends the row.
+                // Picking one hands the accent back to the look.
+                DialogSection {
+                    ruled: false;
+                    title: I18n.t("settings.look");
+
+                    HorizontalLayout {
+                        spacing: 2px;
+                        alignment: start;
+
+                        for name[index] in Theme.look-names: LookSwatch {
+                            ground: Theme.look-ground(index);
+                            accent: Theme.look-accent(index);
+                            glow-from: Theme.look-glow(index, 0);
+                            glow-to: Theme.look-glow(index, 3);
+                            label: root.look-labels[index];
+                            chosen: Theme.look-choice == index;
+                            clicked => { root.look-changed(index); }
+                        }
+
+                        Text {
+                            text: root.look-labels[Theme.look-choice];
+                            color: Theme.fg-muted;
+                            font-size: Theme.fs;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+
                 // The accent: the colour every selection, activated tool and
                 // focus ring is drawn in. Read off the Theme global for the
                 // same reason the theme is, and each one is shown in the
@@ -1127,10 +1229,22 @@ export component SettingsDialog inherits Sheet {
                         spacing: 6px;
                         alignment: start;
 
+                        // A look other than Default brings an accent the
+                        // row does not list: it goes first, under the
+                        // look's name. Under Default the look's own is
+                        // Lime, which the row already starts with.
+                        if Theme.look-choice > 0: AccentSwatch {
+                            colour: Theme.look-accent(Theme.look-choice);
+                            label: root.look-labels[Theme.look-choice];
+                            chosen: Theme.accent-from-look;
+                            clicked => { root.accent-changed(-1); }
+                        }
+
                         for name[index] in Theme.accent-names: AccentSwatch {
                             colour: Theme.accent-of(index);
                             label: root.accent-labels[index];
-                            chosen: Theme.accent-choice == index;
+                            chosen: Theme.accent-from-look ? Theme.look-choice <= 0 && index == 0
+                                : Theme.accent-choice == index;
                             clicked => { root.accent-changed(index); }
                         }
 
@@ -1175,7 +1289,9 @@ export component SettingsDialog inherits Sheet {
 
                         Text {
                             text: Theme.accent-is-custom ? I18n.t("common.custom")
-                                : root.accent-labels[Theme.accent-choice];
+                                : !Theme.accent-from-look ? root.accent-labels[Theme.accent-choice]
+                                : Theme.look-choice > 0 ? root.look-labels[Theme.look-choice]
+                                : root.accent-labels[0];
                             color: Theme.fg-muted;
                             font-size: Theme.fs;
                             vertical-alignment: center;
@@ -1211,7 +1327,10 @@ export component SettingsDialog inherits Sheet {
 
                         for name[index] in Theme.accent-names: AccentSwatch {
                             colour: index == 0 ? Theme.playhead-default : Theme.accent-of(index);
-                            label: root.accent-labels[index];
+                            // Under a look the first dot is the look's own
+                            // accent, not Lime, so it goes by the look's name.
+                            label: index == 0 && Theme.look-choice > 0 ? root.look-labels[Theme.look-choice]
+                                : root.accent-labels[index];
                             chosen: Theme.playhead-choice == index;
                             clicked => { root.playhead-chosen(index); }
                         }
@@ -1251,6 +1370,7 @@ export component SettingsDialog inherits Sheet {
 
                         Text {
                             text: Theme.playhead-is-custom ? I18n.t("common.custom")
+                                : Theme.playhead-choice <= 0 && Theme.look-choice > 0 ? root.look-labels[Theme.look-choice]
                                 : root.accent-labels[Math.max(0, Theme.playhead-choice)];
                             color: Theme.fg-muted;
                             font-size: Theme.fs;
