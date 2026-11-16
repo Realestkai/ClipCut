@@ -814,6 +814,8 @@ pub struct Models {
     pub sounds_mine: Rc<VecModel<crate::ui::SoundCardData>>,
     pub voices_saved: Rc<VecModel<crate::ui::VoiceCardData>>,
     pub sounds_clipcut: Rc<VecModel<crate::ui::SoundCardData>>,
+    /// The ClipCut shelf's categories after All.
+    pub sounds_categories: Rc<VecModel<SharedString>>,
     pub voices_builtin: Rc<VecModel<crate::ui::VoiceCardData>>,
     pub voice_styles: Rc<VecModel<crate::ui::VoiceCardData>>,
     pub transcribers: Rc<VecModel<ModelData>>,
@@ -899,6 +901,7 @@ impl Models {
             sounds_mine: Rc::new(VecModel::default()),
             voices_saved: Rc::new(VecModel::default()),
             sounds_clipcut: Rc::new(VecModel::default()),
+            sounds_categories: Rc::new(VecModel::default()),
             voices_builtin: Rc::new(VecModel::default()),
             voice_styles: Rc::new(VecModel::default()),
             transcribers: Rc::new(VecModel::default()),

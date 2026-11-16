@@ -331,7 +331,10 @@ pub struct Listed {
 
 impl Listed {
     /// Whether the entry can be offered: a plain file name, an id of the
-    /// shape the cache keys on, a digest to check against, and CC0.
+    /// shape the cache keys on, a digest to check against, and a licence
+    /// that lets anyone use it in their videos: CC0, ClipCut's own, or a
+    /// Creative Commons Attribution licence with the author to credit
+    /// (the shelf shows the credit on every row).
     pub fn is_offered(&self) -> bool {
         let license = self.license.to_ascii_uppercase();
         !self.id.is_empty()
@@ -342,7 +345,13 @@ impl Listed {
             && is_plain_name(&self.file)
             && self.sha256.len() == 64
             && self.sha256.chars().all(|c| c.is_ascii_hexdigit())
-            && (license == "CC0" || license == "CC0-1.0")
+            && (license == "CC0"
+                || license == "CC0-1.0"
+                || license == "CLIPCUT"
+                || (license.starts_with("CC-BY")
+                    && !license.contains("NC")
+                    && !license.contains("ND")
+                    && !self.author.trim().is_empty()))
     }
 }
 
@@ -529,7 +538,8 @@ mod tests {
         let _ = std::fs::remove_dir_all(&dir);
     }
 
-    /// Only CC0 entries with a digest and a plain file name are offered.
+    /// Only entries with a usable licence, a digest and a plain file name
+    /// are offered; an attribution licence needs someone to credit.
     #[test]
     fn a_manifest_offers_only_what_it_can_check() {
         let digest = "A".repeat(64);
@@ -537,12 +547,15 @@ mod tests {
             r#"{{"version":1,"sounds":[
                 {{"id":"whoosh-1","name":"Whoosh","category":"Whoosh","file":"w.ogg","duration":1.2,"license":"CC0-1.0","source":"s","sha256":"{digest}"}},
                 {{"id":"bad","name":"No digest","file":"x.ogg","license":"CC0"}},
-                {{"id":"paid","name":"Not CC0","file":"y.ogg","license":"CC-BY-4.0","sha256":"{digest}"}},
+                {{"id":"paid","name":"No one to credit","file":"y.ogg","license":"CC-BY-4.0","sha256":"{digest}"}},
+                {{"id":"credited","name":"Credited","file":"c.ogg","license":"CC-BY-4.0","author":"Someone","sha256":"{digest}"}},
+                {{"id":"nc","name":"Not for videos that earn","file":"n.ogg","license":"CC-BY-NC-4.0","author":"Someone","sha256":"{digest}"}},
                 {{"id":"up","name":"Escapes","file":"../z.ogg","license":"CC0","sha256":"{digest}"}}
             ]}}"#
         );
         let catalogue = Catalogue::parse(bytes.as_bytes()).expect("parses");
-        assert_eq!(catalogue.sounds.len(), 1);
+        assert_eq!(catalogue.sounds.len(), 2);
+        assert!(catalogue.get("credited").is_some());
         let sound = catalogue.get("whoosh-1").unwrap();
         assert_eq!(sound.sha256, "a".repeat(64), "digests compare in lowercase");
         let dirs = AppDirs::under(Path::new("/cache"));

@@ -78,6 +78,8 @@ export global Sounds {
     in property <int> clipcut-state;
     /// 0 All, then Whoosh, Impact, Riser, Ambience, Music.
     in property <int> clipcut-category;
+    /// The shelf's categories after All, as the online list names them.
+    in property <[string]> clipcut-categories;
     /// "Load ClipCut sounds", Refresh, Try again: the list fetched.
     callback load-clipcut();
     callback clipcut-category-changed(index: int);

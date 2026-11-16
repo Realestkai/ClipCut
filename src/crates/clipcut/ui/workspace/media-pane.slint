@@ -1857,9 +1857,10 @@ export component MediaPane inherits Rectangle {
     /// The Audio page is up, or not: a drop of sound files on the window
     /// goes into the library while it is.
     changed tab => { Sounds.shown(root.tab == 8); }
-    /// The Audio page's shelf: 0 = Mine, 10 = Voices, 11 = Styles. 1 was
-    /// ClipCut's own sounds, off the page until their list is published (#60).
-    property <int> audio-category;
+    /// The Audio page's shelf: 0 = Mine, 1 = ClipCut's own sounds (the
+    /// online list, by `Sounds.clipcut-category`), 10 = Voices, 11 = Styles.
+    /// ClipCut's sounds first: they are what most people come here for.
+    property <int> audio-category: 1;
     property <bool> sounds-open: true;
     property <bool> voices-open: true;
     /// How far left the page strip can be pushed: nothing, while its chips
@@ -2212,6 +2213,26 @@ export component MediaPane inherits Rectangle {
                             title: I18n.t("sounds.sounds");
                             open: root.sounds-open;
                             toggled => { root.sounds-open = !root.sounds-open; }
+                        }
+                        if root.sounds-open: CategoryRow {
+                            height: 24px;
+                            label: I18n.t("sounds.clipcutAll");
+                            count: Sounds.clipcut-category == 0 ? Sounds.clipcut.length : 0;
+                            current: root.audio-category == 1 && Sounds.clipcut-category == 0;
+                            clicked => {
+                                root.audio-category = 1;
+                                Sounds.clipcut-category-changed(0);
+                            }
+                        }
+                        for name[index] in Sounds.clipcut-categories: CategoryRow {
+                            height: root.sounds-open ? 24px : 0px;
+                            visible: root.sounds-open;
+                            label: name;
+                            current: root.audio-category == 1 && Sounds.clipcut-category == index + 1;
+                            clicked => {
+                                root.audio-category = 1;
+                                Sounds.clipcut-category-changed(index + 1);
+                            }
                         }
                         if root.sounds-open: CategoryRow {
                             height: 24px;
@@ -2615,6 +2636,34 @@ export component MediaPane inherits Rectangle {
                     }
                     SoundList {
                         items: Sounds.mine;
+                    }
+                }
+
+                // ClipCut's own sounds: the online list, read when the page
+                // is first opened in a session, each sound downloaded the
+                // first time it is played or used. Every row says what it
+                // is and who made it.
+                if root.tab == 8 && root.audio-category == 1: VerticalLayout {
+                    padding: 8px;
+                    spacing: 8px;
+
+                    Text {
+                        text: Sounds.clipcut-state == 1 && Sounds.clipcut.length == 0 ? I18n.t("sounds.loading")
+                            : Sounds.clipcut-state == 3 ? I18n.t("sounds.soon")
+                            : Sounds.clipcut-state == 4 ? I18n.t("sounds.offline")
+                            : I18n.t("sounds.clipcutHint");
+                        color: Theme.fg-muted;
+                        font-size: Theme.fs-sm;
+                        wrap: word-wrap;
+                    }
+                    if Sounds.clipcut-state == 4 || Sounds.clipcut-state == 0: ImportButton {
+                        label: I18n.t("sounds.loadClipcut");
+                        busy-label: I18n.t("sounds.loading");
+                        glyph: Glyph.music;
+                        clicked => { Sounds.load-clipcut(); }
+                    }
+                    SoundList {
+                        items: Sounds.clipcut;
                     }
                 }
 

@@ -37,9 +37,9 @@ const MINE: &str = "mine-";
 /// The prefix of a card id on the ClipCut shelf.
 const CLIPCUT: &str = "clipcut-";
 
-/// The ClipCut shelf's categories, as the manifest names them; the sidebar
-/// shows them in the interface's language, after All.
-pub const CATEGORIES: [&str; 5] = ["Whoosh", "Impact", "Riser", "Ambience", "Music"];
+/// The ClipCut shelf's categories are the manifest's own, in the order its
+/// sounds first name them: a category added to the online list shows up in
+/// every copy of the app without an update.
 
 /// Where the ClipCut shelf stands.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -84,7 +84,8 @@ pub enum SoundsMsg {
     LoadClipCut,
     /// The manifest's worker is done: the list, none yet, or why not.
     ClipCutLoaded(Result<Option<Catalogue>, String>),
-    /// A category of the ClipCut shelf picked: 0 All, then [`CATEGORIES`].
+    /// A category of the ClipCut shelf picked: 0 All, then
+    /// [`SoundsPane::categories`].
     ClipCutCategory(i32),
     /// A ClipCut sound's download, how far.
     Fetching(String, f32),
@@ -105,8 +106,10 @@ pub struct SoundsPane {
     /// shelf stands.
     pub catalogue: Catalogue,
     pub clipcut: ClipCutState,
-    /// The category shown: 0 All, then a row of [`CATEGORIES`].
+    /// The category shown: 0 All, then a row of [`SoundsPane::categories`].
     pub category: usize,
+    /// The list has been read again this session.
+    refreshed: bool,
     /// Downloads running, by card: how far, and what to do once in.
     fetching: HashMap<String, (f32, Then)>,
     /// Stops the downloads when the window goes.
@@ -142,7 +145,16 @@ impl SoundsPane {
     /// this runs the studio's copy of the pane is a blank it must not read.
     pub fn update(&mut self, msg: SoundsMsg, studio: &mut Studio) {
         match msg {
-            SoundsMsg::Shown(on) => self.shown = on,
+            SoundsMsg::Shown(on) => {
+                self.shown = on;
+                // The list is read again once a session, the first time the
+                // page is opened: sounds added online show up without an
+                // update, and the shelf is already there from the cache.
+                if on && !self.refreshed && self.clipcut != ClipCutState::Loading {
+                    self.refreshed = true;
+                    self.update(SoundsMsg::LoadClipCut, studio);
+                }
+            }
             SoundsMsg::LoadClipCut => {
                 let Some(dirs) = self.dirs.clone() else {
                     return;
@@ -180,7 +192,7 @@ impl SoundsPane {
                 }
             },
             SoundsMsg::ClipCutCategory(index) => {
-                self.category = (index.max(0) as usize).min(CATEGORIES.len());
+                self.category = (index.max(0) as usize).min(self.categories().len());
             }
             SoundsMsg::Fetching(card, done) => {
                 if let Some((progress, _)) = self.fetching.get_mut(&card) {
@@ -352,12 +364,34 @@ impl SoundsPane {
         );
     }
 
+    /// The ClipCut shelf's categories, as the manifest names them, in the
+    /// order its sounds first do.
+    pub fn categories(&self) -> Vec<String> {
+        let mut seen: Vec<String> = Vec::new();
+        for sound in &self.catalogue.sounds {
+            let name = sound.category.trim();
+            if !name.is_empty() && !seen.iter().any(|known| known.eq_ignore_ascii_case(name)) {
+                seen.push(name.to_owned());
+            }
+        }
+        seen
+    }
+
+    /// The sidebar's rows for them, in the interface's language.
+    pub fn category_rows(&self) -> Vec<SharedString> {
+        self.categories()
+            .iter()
+            .map(|name| category_label(name).into())
+            .collect()
+    }
+
     /// The ClipCut shelf's rows, narrowed to the category picked.
     pub fn clipcut_rows(&self) -> Vec<SoundCardData> {
+        let categories = self.categories();
         let category = self
             .category
             .checked_sub(1)
-            .and_then(|row| CATEGORIES.get(row));
+            .and_then(|row| categories.get(row));
         let Some(dirs) = self.dirs.as_ref() else {
             return Vec::new();
         };
@@ -376,7 +410,17 @@ impl SoundsPane {
                     name: sound.name.as_str().into(),
                     duration: sound.duration as f32,
                     wave: SharedString::new(),
-                    detail: category_label(&sound.category).into(),
+                    // Who made it, beside what it is: the credit a sound
+                    // is shared under goes wherever the sound does.
+                    detail: if sound.author.trim().is_empty() {
+                        category_label(&sound.category).into()
+                    } else {
+                        tf(
+                            "sounds.byAuthor",
+                            &[&category_label(&sound.category), &sound.author.trim()],
+                        )
+                        .into()
+                    },
                     removable: false,
                     progress,
                 }
@@ -427,6 +471,7 @@ pub fn category_label(category: &str) -> String {
         "riser" => t("sounds.catRiser"),
         "ambience" => t("sounds.catAmbience"),
         "music" => t("sounds.catMusic"),
+        "interface" => t("sounds.catInterface"),
         _ => category.to_owned(),
     }
 }

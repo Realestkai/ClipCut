@@ -434,6 +434,7 @@ fn start(project: Option<std::path::PathBuf>, smoke: bool) -> Result<(), slint::
     studio.watch_packages();
     let dark = studio.prefs.dark.unwrap_or(true);
     app.global::<Theme>().set_dark(dark);
+    app.global::<Theme>().set_snow(studio.prefs.snow);
     motion_tiles::install(&app);
     // Windows puts a dialog's OK before its Cancel; macOS and Linux after.
     app.global::<Theme>().set_ok_first(cfg!(windows));
@@ -608,6 +609,8 @@ fn start(project: Option<std::path::PathBuf>, smoke: bool) -> Result<(), slint::
             .set_voices_saved(ModelRc::from(models.voices_saved.clone()));
         app.global::<Sounds>()
             .set_clipcut(ModelRc::from(models.sounds_clipcut.clone()));
+        app.global::<Sounds>()
+            .set_clipcut_categories(ModelRc::from(models.sounds_categories.clone()));
         app.global::<Sounds>()
             .set_voices_builtin(ModelRc::from(models.voices_builtin.clone()));
         app.global::<Sounds>()
@@ -2157,6 +2160,17 @@ fn start(project: Option<std::path::PathBuf>, smoke: bool) -> Result<(), slint::
     }));
     // The theme is one bool on the Theme global, and every colour in the
     // tree is a binding away from it; it is also remembered.
+    app.on_settings_snow_changed({
+        move |on| {
+            log::info!("settings: Snow {}", if on { "on" } else { "off" });
+            Shell::with(|shell, app| {
+                app.global::<Theme>().set_snow(on);
+                let mut studio = shell.studio.borrow_mut();
+                studio.prefs.snow = on;
+                studio.prefs.save(&studio.host.dirs);
+            });
+        }
+    });
     app.on_settings_theme_changed({
         move |dark| {
             log::info!("settings: Theme {}", if dark { "Dark" } else { "Light" });

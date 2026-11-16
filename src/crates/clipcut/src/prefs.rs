@@ -67,6 +67,8 @@ pub struct Preferences {
     /// place the moment the choice is made.
     /// #320
     pub ui_scale: Option<u32>,
+    /// Snow falls over the window (Settings > Appearance).
+    pub snow: bool,
     /// The chosen transcriber model id, e.g. "base.en".
     pub transcriber_model: Option<String>,
     /// The language the captions sheet last asked the transcriber for, by

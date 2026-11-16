@@ -2071,6 +2071,7 @@ impl Studio {
         // The Audio page.
         sync(&models.sounds_mine, self.sounds.mine());
         sync(&models.sounds_clipcut, self.sounds.clipcut_rows());
+        sync(&models.sounds_categories, self.sounds.category_rows());
         {
             use crate::panes::sounds::ClipCutState;
             let page = app.global::<crate::ui::Sounds>();
