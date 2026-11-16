@@ -134,6 +134,10 @@ export global Editor {
     in-out property <string> library-audition;
     callback library-apply-audio(effect-id: string);
     callback library-save-template();
+    /// Templates page: a new project from the saved template at `path`.
+    callback library-use-template(path: string);
+    /// The saved templates, as cards: id the bundle, name, slot count.
+    in-out property <[CatalogueEntryData]> templates;
     /// Adjustments page: import `.cube` tables as looks of the user's own,
     /// which its LUTs shelf lists.
     callback library-import-lut();

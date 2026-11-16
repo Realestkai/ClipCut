@@ -148,6 +148,7 @@ export component Seat inherits Rectangle {
             catalogue-audio: Editor.catalogue-audio;
             catalogue-filters: Editor.catalogue-filters;
             catalogue-luts: Editor.catalogue-luts;
+            templates: Editor.templates;
             adjustment-art: Editor.adjustment-art;
             catalogue-transitions: Editor.catalogue-transitions;
             effect-groups: Editor.effect-groups;
@@ -163,6 +164,7 @@ export component Seat inherits Rectangle {
             audition-filter(id) => { Editor.library-audition-filter(id); }
             apply-audio(id) => { Editor.library-apply-audio(id); }
             save-template => { Editor.library-save-template(); }
+            use-template(path) => { Editor.library-use-template(path); }
             import-lut => { Editor.library-import-lut(); }
             add-adjustment(label) => { Editor.library-add-adjustment(label); }
             apply-lut(id, label) => { Editor.library-apply-lut(id, label); }

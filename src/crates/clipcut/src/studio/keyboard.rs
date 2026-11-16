@@ -167,6 +167,18 @@ impl Studio {
                 self.split_at(at, true);
             }
             "freeze" => self.freeze_at_playhead(),
+            "replace" => {
+                let id = id.to_owned();
+                crate::host::pick_files_then(
+                    t("studio.replaceClip"),
+                    None,
+                    move |studio, _, _, paths| {
+                        if let Some(path) = paths.into_iter().next() {
+                            studio.replace_clip_with(&id, path);
+                        }
+                    },
+                );
+            }
             // The clip right-clicked, or the selection when it is one of
             // it, as Delete takes it.
             "delete-left" | "delete-right" => {

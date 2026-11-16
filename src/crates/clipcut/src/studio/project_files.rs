@@ -15,6 +15,7 @@ impl Studio {
         let opened = self.open_project_timed(info);
         match &opened {
             Ok(()) => {
+                self.load_templates();
                 if let Some(session) = &self.session {
                     let timeline = session.project().active();
                     let tracks = match timeline.tracks.len() {

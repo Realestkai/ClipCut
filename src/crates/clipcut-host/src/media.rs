@@ -883,12 +883,13 @@ fn poster_moments(project: &str) -> Result<Vec<(String, f64)>, String> {
     Ok(moments)
 }
 
-/// How much the picture changes at each frame of `path`: `(seconds, score)`
-/// for every frame after the first, the score the mean difference in
-/// brightness from the frame before, 0 to 255. A cut between two shots is
+/// How much the picture changes at each frame of `path`: `(seconds, score,
+/// light)` for every frame after the first, the score the mean difference
+/// in brightness from the frame before and the light the frame's own mean
+/// brightness, each 0 to 255. A cut between two shots is
 /// a spike; a camera move or a fade is a low hum. Decoded tiny and at a
 /// glance, so a short clip takes a moment.
-pub fn picture_changes(path: &str) -> Result<Vec<(f64, f64)>, String> {
+pub fn picture_changes(path: &str) -> Result<Vec<(f64, f64, f64)>, String> {
     const W: u32 = 32;
     const H: u32 = 32;
     let options = DecodeOptions::default().scaled_to(W, H).at_a_glance();
@@ -931,7 +932,8 @@ pub fn picture_changes(path: &str) -> Result<Vec<(f64, f64)>, String> {
                 .map(|(a, b)| (a - b).abs())
                 .sum::<f64>()
                 / now.len() as f64;
-            changes.push((at, score));
+            let light = now.iter().sum::<f64>() / now.len() as f64;
+            changes.push((at, score, light));
         }
         before = Some(now);
     }

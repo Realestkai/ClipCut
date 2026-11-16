@@ -184,13 +184,54 @@ pub fn slot_cuts(changes: &[(f64, f64)], slots: u32, seconds: f64) -> Vec<f64> {
     cuts
 }
 
+/// The cuts that the template's preview passes through a flash of white
+/// or a dip to black, by how bright the frames around each cut are against
+/// the footage either side of it: `(cut, "Flash" | "Black")`.
+pub fn cut_looks(changes: &[(f64, f64, f64)], cuts: &[f64]) -> Vec<(f64, &'static str)> {
+    let mean = |from: f64, to: f64| {
+        let lights: Vec<f64> = changes
+            .iter()
+            .filter(|(at, _, _)| *at >= from && *at <= to)
+            .map(|(_, _, light)| *light)
+            .collect();
+        (!lights.is_empty()).then(|| lights.iter().sum::<f64>() / lights.len() as f64)
+    };
+    cuts.iter()
+        .filter_map(|&cut| {
+            let near: Vec<f64> = changes
+                .iter()
+                .filter(|(at, _, _)| (at - cut).abs() <= 0.12)
+                .map(|(_, _, light)| *light)
+                .collect();
+            let brightest = near.iter().copied().fold(f64::MIN, f64::max);
+            let darkest = near.iter().copied().fold(f64::MAX, f64::min);
+            let around = [mean(cut - 0.5, cut - 0.15), mean(cut + 0.15, cut + 0.5)];
+            let around: Vec<f64> = around.into_iter().flatten().collect();
+            if near.is_empty() || around.is_empty() {
+                return None;
+            }
+            let base = around.iter().sum::<f64>() / around.len() as f64;
+            if brightest > 190.0 && brightest - base > 60.0 {
+                Some((cut, "Flash"))
+            } else if darkest < 25.0 && base - darkest > 45.0 {
+                Some((cut, "Black"))
+            } else {
+                None
+            }
+        })
+        .collect()
+}
+
 /// The draft the template makes: its frame, its sound on a track of its
-/// own, and its preview cut at `cuts` into one muted slot a clip.
+/// own, and its preview cut at `cuts` into one muted slot a clip. A cut
+/// in `looks` gets that transition, by CapCut's name for it ("Flash",
+/// "Black"), which the draft import turns into ClipCut's own.
 pub fn draft_for(
     template: &Template,
     video: &Path,
     sound: &Path,
     cuts: &[f64],
+    looks: &[(f64, &str)],
     folder: &Path,
 ) -> Draft {
     let micros = |seconds: f64| (seconds * 1_000_000.0).round() as i64;
@@ -206,11 +247,18 @@ pub fn draft_for(
         .windows(2)
         .map(|pair| {
             let (start, length) = (micros(pair[0]), micros(pair[1] - pair[0]));
+            let into_next: Vec<String> = looks
+                .iter()
+                .filter(|(at, _)| (at - pair[1]).abs() < 1e-6)
+                .map(|(_, name)| format!("t-{}", name.to_lowercase()))
+                .take(1)
+                .collect();
             json!({
                 "material_id": "slots",
                 "target_timerange": { "start": start, "duration": length },
                 "source_timerange": { "start": start, "duration": length },
                 "volume": 0.0,
+                "extra_material_refs": into_next,
             })
         })
         .collect();
@@ -234,6 +282,10 @@ pub fn draft_for(
                 "height": template.height,
                 "has_audio": true,
             }],
+            "transitions": [
+                { "id": "t-flash", "name": "Flash", "duration": 200_000 },
+                { "id": "t-black", "name": "Black", "duration": 300_000 },
+            ],
             "audios": [{
                 "id": "sound",
                 "type": "music",
@@ -258,6 +310,37 @@ pub fn draft_for(
             name: String::new(),
             edit,
         }],
+    }
+}
+
+/// Gives every video clip of the template its own media item, marked as
+/// a template slot: Replace on one clip then fills that slot alone, with a
+/// picture or a video of any length, and the project saves as a ClipCut
+/// template whose slots are these. The items share the preview's file.
+pub fn make_slots(project: &mut clipcut_project::model::Project) {
+    use clipcut_project::model::ClipKind;
+    let mut slots = Vec::new();
+    for timeline in &mut project.timelines {
+        let timeline = std::sync::Arc::make_mut(timeline);
+        for index in 0..timeline.clips.len() {
+            if timeline.clips[index].kind != ClipKind::Video {
+                continue;
+            }
+            let shared = timeline.clips[index].media_id.clone();
+            let Some(item) = project.media.iter().find(|item| item.id == shared) else {
+                continue;
+            };
+            let mut slot = item.clone();
+            slot.id = format!("slot{}", slots.len() + 1);
+            slot.name = format!("Slot {}", slots.len() + 1);
+            slot.placeholder = true;
+            std::sync::Arc::make_mut(&mut timeline.clips[index]).media_id = slot.id.clone();
+            slots.push((shared, slot));
+        }
+    }
+    for (shared, slot) in slots {
+        project.media.retain(|item| item.id != shared);
+        project.media.push(slot);
     }
 }
 
@@ -357,11 +440,22 @@ pub fn import(
     let changes = crate::media::picture_changes(&video.to_string_lossy()).unwrap_or_default();
     let mut template = template;
     if template.seconds <= 0.0 {
-        template.seconds = changes.last().map_or(0.0, |(at, _)| *at);
+        template.seconds = changes.last().map_or(0.0, |(at, _, _)| *at);
     }
-    let cuts = slot_cuts(&changes, template.slots, template.seconds);
-    let draft = draft_for(&template, &video, &sound, &cuts, Path::new(&project.path));
-    let imported = clipcut_project::capcut::import(&draft).map_err(|error| error.to_string())?;
+    let scores: Vec<(f64, f64)> = changes.iter().map(|(at, score, _)| (*at, *score)).collect();
+    let cuts = slot_cuts(&scores, template.slots, template.seconds);
+    let looks = cut_looks(&changes, &cuts);
+    let draft = draft_for(
+        &template,
+        &video,
+        &sound,
+        &cuts,
+        &looks,
+        Path::new(&project.path),
+    );
+    let mut imported =
+        clipcut_project::capcut::import(&draft).map_err(|error| error.to_string())?;
+    make_slots(&mut imported.project);
     let mut settings = imported.settings.clone();
     settings.name = name;
     let document = clipcut_project::to_document(&settings, &imported.project);
@@ -437,7 +531,31 @@ mod tests {
     }
 
     #[test]
+    fn a_flash_and_a_dip_are_told_from_a_plain_cut() {
+        // 30 fps, mid-grey footage; at 1 s a white frame, at 2 s a black
+        // one, at 3 s nothing but the cut.
+        let changes: Vec<(f64, f64, f64)> = (1..150)
+            .map(|i| {
+                let at = i as f64 / 30.0;
+                let light = if i == 30 {
+                    250.0
+                } else if i == 60 {
+                    5.0
+                } else {
+                    120.0
+                };
+                (at, 2.0, light)
+            })
+            .collect();
+        assert_eq!(
+            cut_looks(&changes, &[1.0, 2.0, 3.0]),
+            vec![(1.0, "Flash"), (2.0, "Black")]
+        );
+    }
+
+    #[test]
     fn the_draft_has_a_slot_a_cut_and_the_sound_whole() {
+        use clipcut_project::model::ClipKind;
         let template = Template {
             id: "1".into(),
             title: "T".into(),
@@ -453,12 +571,25 @@ mod tests {
             Path::new("/p/v.mp4"),
             Path::new("/p/s.mp4"),
             &[1.0, 2.0],
+            &[(1.0, "Flash")],
             Path::new("/p"),
         );
         let imported = clipcut_project::capcut::import(&draft).expect("imports");
         assert_eq!(imported.settings.width, 720);
         assert_eq!(imported.settings.height, 960);
         let clips = &imported.project.timelines[0].clips;
-        assert_eq!(clips.len(), 4, "three slots and the sound");
+        let count = |kind: ClipKind| clips.iter().filter(|clip| clip.kind == kind).count();
+        assert_eq!(count(ClipKind::Video), 3, "three slots");
+        assert_eq!(count(ClipKind::Audio), 1, "the sound");
+        assert_eq!(count(ClipKind::Transition), 1, "the flash at the first cut");
+        let mut project = imported.project;
+        make_slots(&mut project);
+        let slots: Vec<_> = project
+            .media
+            .iter()
+            .filter(|item| item.placeholder)
+            .collect();
+        assert_eq!(slots.len(), 3, "a slot a clip");
+        assert_eq!(project.media.len(), 4, "three slots and the sound's file");
     }
 }
