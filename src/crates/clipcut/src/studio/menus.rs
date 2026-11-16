@@ -301,6 +301,53 @@ impl Studio {
 
     /// Delete: the selection goes, and the hole stays unless the timeline
     /// is magnetic.
+    /// Puts the file at `path` in clip `id`'s place: same start, same
+    /// length, the file played from its beginning. A template's slot takes
+    /// any picture or sound and becomes that kind of clip; an ordinary clip
+    /// takes a file of its own kind.
+    pub fn replace_clip_with(&mut self, id: &str, path: std::path::PathBuf) {
+        let id = id.to_owned();
+        let file = path.to_string_lossy().into_owned();
+        spawn_in_project(
+            move || clipcut_host::media::probe(&file),
+            move |studio, _, _, probed| {
+                let summary = match probed {
+                    Ok(summary) => summary,
+                    Err(error) => {
+                        studio.notify(&tf("studio.replaceFailed", &[&error]), true);
+                        return;
+                    }
+                };
+                let Some(clip) = studio.clip(&id).cloned() else {
+                    return;
+                };
+                let item = summary.to_new_media();
+                let media = studio.project().media_by_id(&clip.media_id).cloned();
+                let slot = media.as_ref().filter(|media| media.placeholder);
+                let command = if let Some(slot) = slot {
+                    Command::FillSlot {
+                        media_id: slot.id.clone(),
+                        item,
+                    }
+                } else if media.as_ref().is_some_and(|media| media.kind != item.kind) {
+                    studio.notify(&t("studio.replaceSameKind"), true);
+                    return;
+                } else {
+                    Command::ReplaceClipMedia {
+                        clip_id: id.clone(),
+                        item,
+                        source_start: Some(0.0),
+                        enhanced: false,
+                        offset: 0.0,
+                    }
+                };
+                studio.flush_commit();
+                studio.apply(command);
+                studio.request_preview();
+            },
+        );
+    }
+
     pub fn delete_selected(&mut self) {
         // A selected transition goes on its own, leaving a plain cut.
         if self.selected_transition().is_some() {

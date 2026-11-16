@@ -28,13 +28,17 @@ async function fillDownloads() {
   const buttons = document.querySelectorAll("[data-download]");
   if (!buttons.length) return;
   try {
-    const [latest] = await releases();
+    const all = await releases();
+    const [latest] = all;
     if (!latest) return;
     for (const button of buttons) {
       const ending = button.dataset.download;
-      button.href = asset(latest, ending);
+      // Windows is published before the Macs: each button takes the
+      // newest release that has its file.
+      const release = all.find((r) => r.assets.some((file) => file.name.endsWith(ending))) || latest;
+      button.href = asset(release, ending);
       const size = button.querySelector("[data-size]");
-      if (size) size.textContent = megabytes(latest, ending);
+      if (size) size.textContent = megabytes(release, ending);
     }
     for (const spot of document.querySelectorAll("[data-version]")) {
       spot.textContent = latest.tag_name.slice(1);

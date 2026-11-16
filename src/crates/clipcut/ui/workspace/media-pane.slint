@@ -1823,6 +1823,10 @@ export component MediaPane inherits Rectangle {
     callback apply-audio(effect-id: string);
     /// Templates page: open the save-as-template flow for this project.
     callback save-template();
+    /// Templates page: a new project from the saved template at `path`.
+    callback use-template(path: string);
+    /// The saved templates, as cards.
+    in property <[CatalogueEntryData]> templates;
     /// Adjustments page: bring in `.cube` tables as looks of the user's own.
     callback import-lut();
     /// Adjustments page: lay an adjustment layer at the playhead, called
@@ -2850,7 +2854,18 @@ export component MediaPane inherits Rectangle {
                     }
                 }
 
-                if root.tab == 6: Empty {
+                if root.tab == 6 && root.templates.length > 0: HorizontalLayout {
+                    padding: 8px;
+                    ShelfGrid {
+                        entries: root.templates;
+                        glyph: Glyph.slot;
+                        payload-kind: "";
+                        auditions: false;
+                        applied(id, label) => { root.use-template(id); }
+                    }
+                }
+
+                if root.tab == 6 && root.templates.length == 0: Empty {
                     glyph: Glyph.slot;
                     text: I18n.t("mediaPane.noTemplatesYetMark");
                 }

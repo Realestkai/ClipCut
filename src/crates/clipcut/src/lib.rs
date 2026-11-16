@@ -558,6 +558,7 @@ fn start(project: Option<std::path::PathBuf>, smoke: bool) -> Result<(), slint::
         editor.set_catalogue_effects(ModelRc::from(models.catalogue_effects.clone()));
         editor.set_catalogue_filters(ModelRc::from(models.catalogue_filters.clone()));
         editor.set_catalogue_luts(ModelRc::from(models.catalogue_luts.clone()));
+        editor.set_templates(ModelRc::from(models.templates.clone()));
         editor.set_catalogue_audio(ModelRc::from(models.catalogue_audio.clone()));
         editor.set_catalogue_transitions(ModelRc::from(models.catalogue_transitions.clone()));
         editor.set_effect_groups(ModelRc::from(models.effect_groups.clone()));
@@ -898,6 +899,9 @@ fn start(project: Option<std::path::PathBuf>, smoke: bool) -> Result<(), slint::
     app.on_start_import_capcut(on_window!(|state| {
         state.handle(Msg::Start(StartMsg::ImportCapcut));
     }));
+    app.on_start_import_capcut_link(on_window!(|state, text: SharedString| {
+        state.handle(Msg::Start(StartMsg::ImportCapcutLink(text.to_string())));
+    }));
     app.on_start_open_recent(on_window!(|state, path: SharedString| {
         state.handle(Msg::Start(StartMsg::OpenRecent(path.to_string())));
     }));
@@ -1132,6 +1136,9 @@ fn start(project: Option<std::path::PathBuf>, smoke: bool) -> Result<(), slint::
     }));
     editor.on_library_save_template(on_window!(|state| {
         state.save_template();
+    }));
+    editor.on_library_use_template(on_window!(|state, path: SharedString| {
+        state.use_template(path.to_string());
     }));
     // Nothing borrowed: the dialog is asked on a turn of its own, and the
     // files it answers with are imported there; see `host::after_dialog`.

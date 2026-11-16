@@ -883,6 +883,66 @@ fn poster_moments(project: &str) -> Result<Vec<(String, f64)>, String> {
     Ok(moments)
 }
 
+/// How much the picture changes at each frame of `path`: `(seconds, score,
+/// light)` for every frame after the first, the score the mean difference
+/// in brightness from the frame before and the light the frame's own mean
+/// brightness, each 0 to 255. A cut between two shots is
+/// a spike; a camera move or a fade is a low hum. Decoded tiny and at a
+/// glance, so a short clip takes a moment.
+pub fn picture_changes(path: &str) -> Result<Vec<(f64, f64, f64)>, String> {
+    const W: u32 = 32;
+    const H: u32 = 32;
+    let options = DecodeOptions::default().scaled_to(W, H).at_a_glance();
+    let mut decoder = Decoder::open(path, &options).map_err(describe)?;
+    let fps = clipcut_media::probe(path)
+        .ok()
+        .and_then(|info| {
+            info.require_video()
+                .ok()
+                .map(|video| video.frame_rate.fps().as_f64())
+        })
+        .filter(|fps| *fps > 0.0)
+        .unwrap_or(30.0);
+    let luma = |frame: &Frame| -> Vec<f64> {
+        frame
+            .pixels()
+            .chunks_exact(4)
+            .map(|px| {
+                0.299 * f64::from(px[0]) + 0.587 * f64::from(px[1]) + 0.114 * f64::from(px[2])
+            })
+            .collect()
+    };
+    let mut changes = Vec::new();
+    let mut before: Option<Vec<f64>> = None;
+    let mut produced = 0u64;
+    while let Ok(Some(frame)) = decoder.next_frame() {
+        let at = decoder
+            .position()
+            .map(|position| position.as_f64())
+            .unwrap_or(produced as f64 / fps);
+        produced += 1;
+        let now = luma(&frame);
+        if let Some(before) = &before
+            && before.len() == now.len()
+            && !now.is_empty()
+        {
+            let score = before
+                .iter()
+                .zip(&now)
+                .map(|(a, b)| (a - b).abs())
+                .sum::<f64>()
+                / now.len() as f64;
+            let light = now.iter().sum::<f64>() / now.len() as f64;
+            changes.push((at, score, light));
+        }
+        before = Some(now);
+    }
+    if produced == 0 {
+        return Err(format!("no frame could be read from {path}"));
+    }
+    Ok(changes)
+}
+
 /// One frame of `path` at `seconds`, scaled to `width` across with the
 /// height following the picture's shape.
 pub fn still_at(path: &str, seconds: f64, width: u32) -> Result<Frame, String> {

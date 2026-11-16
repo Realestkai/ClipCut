@@ -1,0 +1,24 @@
+{
+  "items": [
+    {
+      "title": "Updates without the setup wizard",
+      "text": "On Windows, an update from Settings › Version now installs in ClipCut's own small window and opens the new version by itself. No more clicking through the installer."
+    },
+    {
+      "title": "CapCut template links",
+      "text": "Paste a CapCut template's share link on the launch screen and press Import template. You get a project in the template's size, with its music on its own track, its cuts laid out as slots, and its flashes and fades as ClipCut transitions."
+    },
+    {
+      "title": "Replace clip",
+      "text": "Right-click a clip and choose Replace clip… to put a file of your own in its exact place and length. On a template slot, a photo works too."
+    },
+    {
+      "title": "Templates",
+      "text": "Save any project as a template, and open the Templates tab in the media panel to start a new project from one. Its slots show what goes where until you replace them."
+    },
+    {
+      "title": "Updates arrive sooner",
+      "text": "Windows updates are published as soon as they are built, without waiting for the Mac versions."
+    }
+  ]
+}

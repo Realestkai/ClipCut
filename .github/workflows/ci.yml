@@ -169,7 +169,9 @@ jobs:
       # second.
       - name: Check
         if: runner.os != 'Windows'
-        timeout-minutes: 30
+        # Thirty was the whole of a cold build on the three-core runner and
+        # a PR with a new crate ran past it (run 43791926335).
+        timeout-minutes: 50
         working-directory: src
         run: |
           set -o pipefail

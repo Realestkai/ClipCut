@@ -1793,6 +1793,7 @@ impl Studio {
                 is_lut,
             );
             sync(&models.catalogue_luts, entries);
+            sync(&models.templates, self.template_cards.clone());
             app.global::<Editor>().set_adjustment_art(
                 Catalogue::builtin()
                     .get(ADJUST_ID)
@@ -2238,6 +2239,15 @@ impl Studio {
                 straddled
                     && !locked
                     && (clip.kind == model::ClipKind::Video || clip.kind == model::ClipKind::Image),
+            ),
+            // Another file in this clip's place, keeping its place and
+            // length on the timeline: how a template's slot is filled.
+            action(
+                "replace",
+                t("studio.replaceClip"),
+                Glyph::Import,
+                "",
+                !locked && clip.kind != model::ClipKind::Text,
             ),
             // The picture restored and enlarged by the model: the row opens
             // the clip's Enhance in the inspector, whose switch runs it.

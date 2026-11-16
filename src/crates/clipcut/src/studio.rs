@@ -742,6 +742,8 @@ pub struct Models {
     pub catalogue_filters: Rc<VecModel<CatalogueEntryData>>,
     /// The looks made from tables, for the Adjustments page's LUTs shelf.
     pub catalogue_luts: Rc<VecModel<CatalogueEntryData>>,
+    /// The saved templates, for the Templates page.
+    pub templates: Rc<VecModel<CatalogueEntryData>>,
     pub catalogue_audio: Rc<VecModel<CatalogueEntryData>>,
     pub catalogue_transitions: Rc<VecModel<CatalogueEntryData>>,
     pub effect_groups: Rc<VecModel<SharedString>>,
@@ -851,6 +853,7 @@ impl Models {
             catalogue_effects: Rc::new(VecModel::default()),
             catalogue_filters: Rc::new(VecModel::default()),
             catalogue_luts: Rc::new(VecModel::default()),
+            templates: Rc::new(VecModel::default()),
             catalogue_audio: Rc::new(VecModel::default()),
             catalogue_transitions: Rc::new(VecModel::default()),
             effect_groups: Rc::new(VecModel::default()),
@@ -1074,6 +1077,8 @@ pub struct Studio {
     hover_hush: slint::Timer,
     /// One clip, held for Paste.
     pub clipboard: Vec<Held>,
+    /// The Templates page's cards: one a saved template, its id the bundle.
+    pub template_cards: Vec<CatalogueEntryData>,
     /// The monitor: its frame, and the requests for the next.
     pub monitor: crate::panes::monitor::MonitorPane,
 
@@ -3109,6 +3114,7 @@ impl Studio {
             hover: None,
             hover_hush: slint::Timer::default(),
             clipboard: Vec::new(),
+            template_cards: Vec::new(),
             monitor: crate::panes::monitor::MonitorPane::default(),
             export: Default::default(),
             settings: crate::panes::settings::SettingsPane::default(),

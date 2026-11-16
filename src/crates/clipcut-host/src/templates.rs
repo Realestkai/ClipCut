@@ -113,12 +113,29 @@ pub fn save(
     // Placeholder media loses its path - it was the creator's own footage,
     // standing in. Everything else is part of the design and ships in the
     // bundle, referenced relative to it.
+    // One copy a file: a CapCut template's slots all show one preview.
+    let mut bundled: std::collections::HashMap<String, String> = std::collections::HashMap::new();
+    let mut bundle_once = |id: &str, source: &str| -> Result<String, String> {
+        if let Some(done) = bundled.get(source) {
+            return Ok(done.clone());
+        }
+        let done = bundle_file(&assets, id, source)?;
+        bundled.insert(source.to_owned(), done.clone());
+        Ok(done)
+    };
     for item in &mut project.media {
         if item.placeholder {
-            item.path = String::new();
+            // Its footage stays when it is on disk, as the guide to what
+            // goes in the slot (a CapCut template's own preview); the
+            // template opens playing, and Replace swaps each slot.
+            item.path = if Path::new(&item.path).is_file() {
+                bundle_once(&item.id.clone(), &item.path.clone())?
+            } else {
+                String::new()
+            };
             continue;
         }
-        item.path = bundle_file(&assets, &item.id.clone(), &item.path.clone())?;
+        item.path = bundle_once(&item.id.clone(), &item.path.clone())?;
     }
     for (index, font) in project.fonts.iter_mut().enumerate() {
         font.path = bundle_file(&assets, &format!("font{index}"), &font.path.clone())?;
@@ -290,7 +307,9 @@ pub fn instantiate(
         .iter()
         .filter(|slot| !fills.iter().any(|fill| fill.media_id == slot.media_id))
         .collect();
-    if !unfilled.is_empty() {
+    // No fills at all opens the template as it is, its slots showing their
+    // guide footage, to be filled one by one with Replace in the editor.
+    if !fills.is_empty() && !unfilled.is_empty() {
         return Err(format!("{} slot(s) still need a clip", unfilled.len()));
     }
 

@@ -250,7 +250,51 @@ impl Studio {
         spawn(
             move || templates::save(&config, &document, &settings, &path, &name),
             |studio, _, _, result| match result {
-                Ok(info) => studio.notify(&tf("studio.savedTemplate", &[&info.name]), false),
+                Ok(info) => {
+                    studio.load_templates();
+                    studio.notify(&tf("studio.savedTemplate", &[&info.name]), false);
+                }
+                Err(error) => studio.notify(&error, true),
+            },
+        );
+    }
+
+    /// Reads the saved templates again, for the Templates page.
+    pub fn load_templates(&mut self) {
+        self.template_cards = templates::list(&self.host.dirs.config)
+            .into_iter()
+            .map(|info| {
+                let poster = std::path::Path::new(&info.path).join("poster.jpg");
+                CatalogueEntryData {
+                    id: info.path.as_str().into(),
+                    name: info.name.as_str().into(),
+                    description: tf("studio.templateSlots", &[&info.slots.len()]).into(),
+                    art: slint::Image::load_from_path(&poster).unwrap_or_default(),
+                    ..Default::default()
+                }
+            })
+            .collect();
+    }
+
+    /// A new project made from the template bundle at `path`, beside the
+    /// projects, and opened: its slots show the template's own footage
+    /// until Replace on each puts a clip of yours there.
+    pub fn use_template(&mut self, path: String) {
+        let Some(info) = templates::list(&self.host.dirs.config)
+            .into_iter()
+            .find(|info| info.path == path)
+        else {
+            return;
+        };
+        let location = self.start.location.clone();
+        let name = clipcut_host::capcut::free_name(&location, &info.name);
+        spawn(
+            move || templates::instantiate(&path, &location, &name, Vec::new()),
+            |studio, _, _, made| match made {
+                Ok(project) => match studio.open_project(project) {
+                    Ok(()) => studio.notify(&t("studio.templateOpened"), false),
+                    Err(error) => studio.notify(&error, true),
+                },
                 Err(error) => studio.notify(&error, true),
             },
         );

@@ -22,6 +22,7 @@
 pub mod awake;
 pub mod brush;
 pub mod capcut;
+pub mod capcut_link;
 pub mod cards;
 pub mod consolidate;
 #[cfg(test)]
