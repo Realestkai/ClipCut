@@ -1538,15 +1538,15 @@ component NewsCard inherits Pressable {
 
     label: root.title;
     radius: root.compact ? 22px : 28px;
-    background: #e5475f;
+    background: Theme.news-ground;
     clip: true;
 
-    Glow { x: -root.width * 0.55; y: root.height * 0.05; width: root.width * 1.25; height: self.width; tint: #f8b640; }
-    Glow { x: root.width * 0.35; y: -root.height * 0.9; width: root.width * 1.0; height: self.width; tint: #f06a3c; }
-    Glow { x: root.width * 0.25; y: root.height * 0.05; width: root.width * 0.95; height: self.width; tint: #e43fd6; }
-    Glow { x: root.width * 0.5; y: root.height * 0.25; width: root.width * 1.0; height: self.width; tint: #4a12d9; }
-    Glow { x: root.width * 0.72; y: root.height * 0.55; width: root.width * 0.7; height: self.width; tint: #3a0bc2; }
-    Glow { x: -root.width * 0.3; y: root.height * 0.72; width: root.width * 0.55; height: self.width; tint: #5c0f3c; }
+    Glow { x: -root.width * 0.55; y: root.height * 0.05; width: root.width * 1.25; height: self.width; tint: Theme.news-glows[0]; }
+    Glow { x: root.width * 0.35; y: -root.height * 0.9; width: root.width * 1.0; height: self.width; tint: Theme.news-glows[1]; }
+    Glow { x: root.width * 0.25; y: root.height * 0.05; width: root.width * 0.95; height: self.width; tint: Theme.news-glows[2]; }
+    Glow { x: root.width * 0.5; y: root.height * 0.25; width: root.width * 1.0; height: self.width; tint: Theme.news-glows[3]; }
+    Glow { x: root.width * 0.72; y: root.height * 0.55; width: root.width * 0.7; height: self.width; tint: Theme.news-glows[4]; }
+    Glow { x: -root.width * 0.3; y: root.height * 0.72; width: root.width * 0.55; height: self.width; tint: Theme.news-glows[5]; }
 
     // A wash of light under the pointer, the card's own hover.
     Rectangle {
