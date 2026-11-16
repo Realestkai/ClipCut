@@ -1,0 +1,19 @@
+# Colours in the working space: linear light, 1.0 the white of an SDR
+# picture. Each probe is the middle pixel of a flat picture.
+
+[[probe]]
+name = "default, a flat colour holds"
+input = [0.8, 0.5, 0.3, 1]
+expect = [0.8, 0.5, 0.3, 1]
+
+[[probe]]
+name = "at its least, a flat colour holds"
+at = "min"
+input = [0.8, 0.5, 0.3, 1]
+expect = [0.8, 0.5, 0.3, 1]
+
+[[probe]]
+name = "at its most, a flat colour holds"
+at = "max"
+input = [0.8, 0.5, 0.3, 1]
+expect = [0.8, 0.5, 0.3, 1]

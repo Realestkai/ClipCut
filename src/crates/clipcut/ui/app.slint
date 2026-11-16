@@ -67,6 +67,7 @@ import {
     StartScreen,
 } from "start.slint";
 import { TitleBar } from "title-bar.slint";
+import { Snow } from "theme/snow.slint";
 import { PhoneEditor, PhoneSheets } from "phone/editor.slint";
 import {
     AppliedEntryData,
@@ -400,6 +401,7 @@ export component App inherits Window {
     callback settings-language-changed(index: int);
     callback settings-log-level-changed(index: int);
     callback settings-theme-changed(dark: bool);
+    callback settings-snow-changed(on: bool);
     callback settings-look-changed(index: int);
     callback settings-accent-changed(index: int);
     callback settings-accent-custom-changed(colour: color);
@@ -1051,6 +1053,7 @@ export component App inherits Window {
         language-changed(index) => { root.settings-language-changed(index); }
         log-level-changed(index) => { root.settings-log-level-changed(index); }
         theme-changed(dark) => { root.settings-theme-changed(dark); }
+        snow-changed(on) => { root.settings-snow-changed(on); }
         look-changed(index) => { root.settings-look-changed(index); }
         accent-changed(index) => { root.settings-accent-changed(index); }
         accent-custom-changed(colour) => { root.settings-accent-custom-changed(colour); }
@@ -1192,6 +1195,16 @@ export component App inherits Window {
         data: root.confirm;
         confirmed => { root.confirm-accepted(); }
         dismissed => { root.confirm-dismissed(); }
+    }
+
+    // Snow, when it is on: over the window and its sheets, under the
+    // notices and menus, and through to whatever is under it for every
+    // click.
+    if Theme.snow: Snow {
+        x: 0;
+        y: 0;
+        width: root.width;
+        height: root.height;
     }
 
     // Over everything but the tooltips and the menus, the sheets included:

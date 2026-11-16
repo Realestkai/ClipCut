@@ -884,12 +884,14 @@ fn poster_moments(project: &str) -> Result<Vec<(String, f64)>, String> {
 }
 
 /// How much the picture changes at each frame of `path`: `(seconds, score,
-/// light)` for every frame after the first, the score the mean difference
-/// in brightness from the frame before and the light the frame's own mean
-/// brightness, each 0 to 255. A cut between two shots is
+/// light, sharpness)` for every frame after the first. The score is the
+/// mean difference in brightness from the frame before and the light the
+/// frame's own mean brightness, each 0 to 255; the sharpness is how much
+/// fine detail it has (the spread of its Laplacian), which drops in the
+/// motion blur of a whip or zoom transition. A cut between two shots is
 /// a spike; a camera move or a fade is a low hum. Decoded tiny and at a
 /// glance, so a short clip takes a moment.
-pub fn picture_changes(path: &str) -> Result<Vec<(f64, f64, f64)>, String> {
+pub fn picture_changes(path: &str) -> Result<Vec<(f64, f64, f64, f64)>, String> {
     const W: u32 = 32;
     const H: u32 = 32;
     let options = DecodeOptions::default().scaled_to(W, H).at_a_glance();
@@ -933,7 +935,7 @@ pub fn picture_changes(path: &str) -> Result<Vec<(f64, f64, f64)>, String> {
                 .sum::<f64>()
                 / now.len() as f64;
             let light = now.iter().sum::<f64>() / now.len() as f64;
-            changes.push((at, score, light));
+            changes.push((at, score, light, sharpness(&now, W as usize)));
         }
         before = Some(now);
     }
@@ -941,6 +943,26 @@ pub fn picture_changes(path: &str) -> Result<Vec<(f64, f64, f64)>, String> {
         return Err(format!("no frame could be read from {path}"));
     }
     Ok(changes)
+}
+
+/// The variance of a small greyscale picture's Laplacian: high for crisp
+/// detail, low for a blurred or flat frame. `side` is its width.
+fn sharpness(luma: &[f64], side: usize) -> f64 {
+    let rows = luma.len() / side.max(1);
+    let mut values = Vec::with_capacity(luma.len());
+    for y in 1..rows.saturating_sub(1) {
+        for x in 1..side.saturating_sub(1) {
+            let at = |dx: isize, dy: isize| {
+                luma[(y as isize + dy) as usize * side + (x as isize + dx) as usize]
+            };
+            values.push(4.0 * at(0, 0) - at(-1, 0) - at(1, 0) - at(0, -1) - at(0, 1));
+        }
+    }
+    if values.is_empty() {
+        return 0.0;
+    }
+    let mean = values.iter().sum::<f64>() / values.len() as f64;
+    values.iter().map(|v| (v - mean).powi(2)).sum::<f64>() / values.len() as f64
 }
 
 /// One frame of `path` at `seconds`, scaled to `width` across with the

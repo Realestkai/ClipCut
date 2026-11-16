@@ -9,6 +9,30 @@ then checked against its SHA-256 and kept in the app's cache.
 
 This page is what the asset curator produces for that to work.
 
+## Adding a sound (no app update needed)
+
+1. On GitHub, open the `audio` folder, press **Add file › Upload files**, drop
+   the sound files in (WAV, MP3, OGG, FLAC, M4A) and commit.
+2. Open `audio/sounds.csv`, press the pencil, and add one line per file:
+
+   ```csv
+   file,name,category,author,license,source
+   my-whoosh.wav,Big whoosh,Whoosh,Jane Doe,CC-BY-4.0,https://example.com/where-it-came-from
+   ```
+
+   - **category** is any word: a new one becomes a new row in the app's sidebar.
+   - **author** is shown under the sound's name as its credit.
+   - **license** must let anyone use the sound in their videos: `CC0-1.0`,
+     `CC-BY-4.0` (or `CC-BY-3.0`, with an author), or `ClipCut` for a sound
+     we made ourselves. Anything else (NC, ND, "all rights reserved",
+     copyrighted music or meme audio you don't have rights to) is left out.
+3. Commit. The **Sounds** workflow checks every row, uploads the files and
+   updates `audio/manifest.json`. Its summary lists anything it left out and why.
+
+Every copy of ClipCut reads the list the first time the Audio page is opened
+in a session, so the sound appears for everyone within minutes, whatever
+version they run.
+
 ## Layout in `Realestkai/ClipCut`
 
 ```text

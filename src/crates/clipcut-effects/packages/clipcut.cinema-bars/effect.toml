@@ -1,0 +1,31 @@
+format = 2
+
+[effect]
+id = "clipcut.cinema-bars"
+name = "Cinema Bars"
+kind = "effect"
+category = "Film"
+order = 10
+description = "Black bars that crop the frame to a film's shape: wide 2.39, 2:1, 1.85, or a square 4:3."
+
+[[param]]
+key = "ratio"
+label = "Shape"
+type = "enum"
+values = [0, 1, 2, 3]
+labels = ["2.39:1", "2:1", "1.85:1", "4:3"]
+default = 0
+min = 0
+max = 3
+
+[[param]]
+key = "opacity"
+label = "Opacity"
+unit = "%"
+min = 0
+max = 100
+step = 1
+default = 100
+
+[wgsl]
+entry = "effect.wgsl"

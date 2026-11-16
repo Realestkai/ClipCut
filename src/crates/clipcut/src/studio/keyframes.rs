@@ -1894,9 +1894,23 @@ impl Studio {
         // has the Latin ones and Languages, under it, the rest.
         let cards: Vec<TextPresetData> = self.text_presets.iter().map(preset_card).collect();
         let latin = |card: &TextPresetData| card.language.eq_ignore_ascii_case("latin");
+        // The watermark templates have a shelf of their own.
+        let watermark = |card: &TextPresetData| card.id.starts_with("clipcut.watermark-");
         sync(
             &models.style_presets,
-            cards.iter().filter(|card| latin(card)).cloned().collect(),
+            cards
+                .iter()
+                .filter(|card| latin(card) && !watermark(card))
+                .cloned()
+                .collect(),
+        );
+        sync(
+            &models.watermark_presets,
+            cards
+                .iter()
+                .filter(|card| watermark(card))
+                .cloned()
+                .collect(),
         );
         sync(
             &models.language_presets,
@@ -2071,6 +2085,7 @@ impl Studio {
         // The Audio page.
         sync(&models.sounds_mine, self.sounds.mine());
         sync(&models.sounds_clipcut, self.sounds.clipcut_rows());
+        sync(&models.sounds_categories, self.sounds.category_rows());
         {
             use crate::panes::sounds::ClipCutState;
             let page = app.global::<crate::ui::Sounds>();

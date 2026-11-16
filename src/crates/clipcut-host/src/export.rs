@@ -88,6 +88,69 @@ pub fn request(session: &Session, spec: &ExportSpec, titles: Vec<ExportClip>) ->
     }
 }
 
+/// ClipCut's mark, the logo and the name, white with a soft shadow.
+const WATERMARK: &[u8] = include_bytes!("../../../../assets/brand/clipcut-watermark.png");
+/// Its size in pixels, for placing it.
+const WATERMARK_SIZE: (f64, f64) = (620.0, 320.0);
+
+/// Puts ClipCut's mark on `request`: every video exported from the window
+/// or through the API carries it (see [`watermark`]).
+pub fn add_watermark(request: &mut ExportRequest) {
+    if let Some(mark) = watermark(&request.clips, request.width, request.height) {
+        request.clips.push(mark);
+    }
+}
+
+/// Every export carries ClipCut's mark in its top right corner, small and
+/// a little see-through, the whole way along: a still on a lane of its own
+/// over everything, so it goes through the same compositor as the edit
+/// does on every path. `None` for an edit with no picture, and when the
+/// mark could not be put where the renderer reads it from.
+pub fn watermark(clips: &[ExportClip], width: u32, height: u32) -> Option<ExportClip> {
+    let end = clips
+        .iter()
+        .map(|clip| clip.start + clip.duration)
+        .fold(0.0_f64, f64::max);
+    if end <= 0.0 || width == 0 || height == 0 {
+        return None;
+    }
+    let path = std::env::temp_dir().join("clipcut-watermark-1.png");
+    let current = std::fs::metadata(&path).is_ok_and(|meta| meta.len() == WATERMARK.len() as u64);
+    if !current {
+        std::fs::write(&path, WATERMARK).ok()?;
+    }
+    let (frame_w, frame_h) = (f64::from(width), f64::from(height));
+    let (mark_w, mark_h) = WATERMARK_SIZE;
+    // The same size on a tall frame as on a wide one: a share of the
+    // shorter side, and a margin from the corner in proportion.
+    let short = frame_w.min(frame_h);
+    let wanted_w = 0.2 * short;
+    let wanted_h = wanted_w * mark_h / mark_w;
+    let margin = 0.025 * short;
+    // Scale 1 fits the picture inside the frame.
+    let fitted_w = mark_w * (frame_w / mark_w).min(frame_h / mark_h);
+    let centre_x = frame_w - margin - wanted_w / 2.0;
+    let centre_y = margin + wanted_h / 2.0;
+    let track = clips
+        .iter()
+        .map(|clip| clip.track)
+        .max()
+        .map_or(0, |top| top + 1);
+    Some(ExportClip {
+        path: path.to_string_lossy().into_owned(),
+        muted: true,
+        volume: 0.0,
+        has_audio: Some(false),
+        media_width: Some(mark_w as u32),
+        media_height: Some(mark_h as u32),
+        scale: wanted_w / fitted_w,
+        offset_x: (centre_x - frame_w / 2.0) / frame_w,
+        offset_y: (centre_y - frame_h / 2.0) / frame_h,
+        opacity: 0.8,
+        ..ExportClip::blank(clipcut_export::ClipKind::Image, 0.0, end, track)
+    })
+}
+
 /// Renders `request` and returns the path written, reporting through
 /// `progress` and stopping at the next frame once `cancel` is set. Blocks for
 /// the whole render: run it on its own thread. Draws on a device of its

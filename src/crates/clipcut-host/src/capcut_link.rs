@@ -184,42 +184,83 @@ pub fn slot_cuts(changes: &[(f64, f64)], slots: u32, seconds: f64) -> Vec<f64> {
     cuts
 }
 
-/// The cuts that the template's preview passes through a flash of white
-/// or a dip to black, by how bright the frames around each cut are against
-/// the footage either side of it: `(cut, "Flash" | "Black")`.
-pub fn cut_looks(changes: &[(f64, f64, f64)], cuts: &[f64]) -> Vec<(f64, &'static str)> {
-    let mean = |from: f64, to: f64| {
+/// The cuts settled against the frames around them, and the transition
+/// each one passes through: `(cuts, [(cut, "Flash" | "Black" | "Blur")])`.
+///
+/// - a flash of white or a dip to black, by how bright the frames around
+///   the cut are against the footage either side of it;
+/// - a whip, zoom or spin, by the motion blur: frames around the cut with
+///   a fraction of the footage's usual detail. CapCut lays such a
+///   transition over the cut, half in each clip, so the cut moves to the
+///   middle of the blur and a blur transition goes over it.
+///
+/// `changes` is [`crate::media::picture_changes`]'s `(seconds, score,
+/// light, sharpness)`.
+pub fn settle_cuts(
+    changes: &[(f64, f64, f64, f64)],
+    cuts: &[f64],
+) -> (Vec<f64>, Vec<(f64, &'static str)>) {
+    let mean_light = |from: f64, to: f64| {
         let lights: Vec<f64> = changes
             .iter()
-            .filter(|(at, _, _)| *at >= from && *at <= to)
-            .map(|(_, _, light)| *light)
+            .filter(|(at, ..)| *at >= from && *at <= to)
+            .map(|(_, _, light, _)| *light)
             .collect();
         (!lights.is_empty()).then(|| lights.iter().sum::<f64>() / lights.len() as f64)
     };
-    cuts.iter()
-        .filter_map(|&cut| {
-            let near: Vec<f64> = changes
-                .iter()
-                .filter(|(at, _, _)| (at - cut).abs() <= 0.12)
-                .map(|(_, _, light)| *light)
-                .collect();
-            let brightest = near.iter().copied().fold(f64::MIN, f64::max);
-            let darkest = near.iter().copied().fold(f64::MAX, f64::min);
-            let around = [mean(cut - 0.5, cut - 0.15), mean(cut + 0.15, cut + 0.5)];
-            let around: Vec<f64> = around.into_iter().flatten().collect();
-            if near.is_empty() || around.is_empty() {
-                return None;
-            }
+    let mut sharp: Vec<f64> = changes.iter().map(|(.., sharpness)| *sharpness).collect();
+    sharp.sort_by(f64::total_cmp);
+    let usual = sharp.get(sharp.len() / 2).copied().unwrap_or(0.0);
+
+    let mut settled: Vec<(f64, Option<&'static str>)> = Vec::new();
+    for &cut in cuts {
+        let near: Vec<&(f64, f64, f64, f64)> = changes
+            .iter()
+            .filter(|(at, ..)| (at - cut).abs() <= 0.12)
+            .collect();
+        let around: Vec<f64> = [
+            mean_light(cut - 0.5, cut - 0.15),
+            mean_light(cut + 0.15, cut + 0.5),
+        ]
+        .into_iter()
+        .flatten()
+        .collect();
+        if !near.is_empty() && !around.is_empty() {
             let base = around.iter().sum::<f64>() / around.len() as f64;
+            let brightest = near.iter().map(|c| c.2).fold(f64::MIN, f64::max);
+            let darkest = near.iter().map(|c| c.2).fold(f64::MAX, f64::min);
             if brightest > 190.0 && brightest - base > 60.0 {
-                Some((cut, "Flash"))
-            } else if darkest < 25.0 && base - darkest > 45.0 {
-                Some((cut, "Black"))
-            } else {
-                None
+                settled.push((cut, Some("Flash")));
+                continue;
             }
-        })
-        .collect()
+            if darkest < 25.0 && base - darkest > 45.0 {
+                settled.push((cut, Some("Black")));
+                continue;
+            }
+        }
+        let blurred: Vec<f64> = changes
+            .iter()
+            .filter(|(at, _, _, sharpness)| {
+                (at - cut).abs() <= 0.17 && usual > 0.0 && *sharpness < 0.35 * usual
+            })
+            .map(|(at, ..)| *at)
+            .collect();
+        if blurred.len() >= 2 {
+            let (first, last) = (blurred[0], blurred[blurred.len() - 1]);
+            settled.push(((first + last) / 2.0, Some("Blur")));
+        } else {
+            settled.push((cut, None));
+        }
+    }
+    settled.sort_by(|a, b| a.0.total_cmp(&b.0));
+    // Two cuts that settled onto one blur are one cut.
+    settled.dedup_by(|later, earlier| (later.0 - earlier.0).abs() < 0.1);
+    let cuts = settled.iter().map(|(cut, _)| *cut).collect();
+    let looks = settled
+        .iter()
+        .filter_map(|(cut, look)| look.map(|look| (*cut, look)))
+        .collect();
+    (cuts, looks)
 }
 
 /// The draft the template makes: its frame, its sound on a track of its
@@ -232,6 +273,7 @@ pub fn draft_for(
     sound: &Path,
     cuts: &[f64],
     looks: &[(f64, &str)],
+    pieces: &[std::path::PathBuf],
     folder: &Path,
 ) -> Draft {
     let micros = |seconds: f64| (seconds * 1_000_000.0).round() as i64;
@@ -243,10 +285,20 @@ pub fn draft_for(
             .filter(|cut| *cut > 0.0 && *cut < total),
     );
     bounds.push(total);
+    // A piece a slot when the preview was cut into them: each slot is its
+    // own short file, played from its start. Otherwise every slot is the
+    // whole preview, played from the slot's moment.
+    let cut_up = pieces.len() == bounds.len() - 1;
     let segments: Vec<Value> = bounds
         .windows(2)
-        .map(|pair| {
+        .enumerate()
+        .map(|(index, pair)| {
             let (start, length) = (micros(pair[0]), micros(pair[1] - pair[0]));
+            let (material, from) = if cut_up {
+                (format!("piece{}", index + 1), 0)
+            } else {
+                ("slots".to_owned(), start)
+            };
             let into_next: Vec<String> = looks
                 .iter()
                 .filter(|(at, _)| (at - pair[1]).abs() < 1e-6)
@@ -254,9 +306,9 @@ pub fn draft_for(
                 .take(1)
                 .collect();
             json!({
-                "material_id": "slots",
+                "material_id": material,
                 "target_timerange": { "start": start, "duration": length },
-                "source_timerange": { "start": start, "duration": length },
+                "source_timerange": { "start": from, "duration": length },
                 "volume": 0.0,
                 "extra_material_refs": into_next,
             })
@@ -267,24 +319,42 @@ pub fn draft_for(
     } else {
         template.title.clone()
     };
+    let mut videos: Vec<Value> = pieces
+        .iter()
+        .enumerate()
+        .map(|(index, piece)| {
+            json!({
+                "id": format!("piece{}", index + 1),
+                "type": "video",
+                "path": piece.to_string_lossy(),
+                "material_name": format!("Slot {}", index + 1),
+                "duration": micros(bounds[index + 1] - bounds[index]),
+                "width": template.width,
+                "height": template.height,
+                "has_audio": false,
+            })
+        })
+        .collect();
+    videos.push(json!({
+        "id": "slots",
+        "type": "video",
+        "path": video.to_string_lossy(),
+        "material_name": format!("{name} (template)"),
+        "duration": micros(total),
+        "width": template.width,
+        "height": template.height,
+        "has_audio": true,
+    }));
     let edit = json!({
         "canvas_config": { "width": template.width, "height": template.height },
         "fps": 30.0,
         "duration": micros(total),
         "materials": {
-            "videos": [{
-                "id": "slots",
-                "type": "video",
-                "path": video.to_string_lossy(),
-                "material_name": format!("{name} (template)"),
-                "duration": micros(total),
-                "width": template.width,
-                "height": template.height,
-                "has_audio": true,
-            }],
+            "videos": videos,
             "transitions": [
                 { "id": "t-flash", "name": "Flash", "duration": 200_000 },
                 { "id": "t-black", "name": "Black", "duration": 300_000 },
+                { "id": "t-blur", "name": "Blur", "duration": 300_000 },
             ],
             "audios": [{
                 "id": "sound",
@@ -342,6 +412,82 @@ pub fn make_slots(project: &mut clipcut_project::model::Project) {
         project.media.retain(|item| item.id != shared);
         project.media.push(slot);
     }
+}
+
+/// The picture of `video` cut at `cuts` into one file a piece, in
+/// `folder`: `Slot 01.mp4`, `Slot 02.mp4` and on, picture only (the sound
+/// is the template's own track). One pass through the file, a new encoder
+/// at each cut. Every piece or none: a piece that came out empty makes it
+/// an error, and the import keeps the whole preview behind its slots.
+pub fn cut_pieces(
+    video: &Path,
+    cuts: &[f64],
+    folder: &Path,
+) -> Result<Vec<std::path::PathBuf>, String> {
+    use clipcut_media::{
+        DecodeOptions, Decoder, EncodeOptions, Encoder, FrameSink, FrameSource, RateMode,
+        VideoCodec,
+    };
+    let info = clipcut_media::probe(video).map_err(|error| error.to_string())?;
+    let stream = info
+        .video
+        .as_ref()
+        .ok_or("the template's video has no picture")?;
+    let rate = stream.frame_rate;
+    let fps = rate.fps().as_f64().max(1.0);
+    let (width, height) = (stream.width & !1, stream.height & !1);
+    std::fs::create_dir_all(folder)
+        .map_err(|error| format!("could not make {}: {error}", folder.display()))?;
+    let options = EncodeOptions {
+        codec: VideoCodec::H264,
+        preset: "medium".to_owned(),
+        crf: 16,
+        rate_mode: RateMode::Vbr,
+        bitrate_kbps: 0,
+        ten_bit: false,
+        color_range: clipcut_media::ColorRange::Limited,
+        hardware: true,
+        threads: 2,
+        software_only: false,
+    };
+    let mut decoder = Decoder::open(video, &DecodeOptions::default().in_software().threaded(2))
+        .map_err(|error| error.to_string())?;
+    let mut pieces: Vec<Option<std::path::PathBuf>> = vec![None; cuts.len() + 1];
+    let mut encoder: Option<(usize, Encoder)> = None;
+    let mut count = 0u64;
+    while let Some(frame) = decoder.next_frame().map_err(|error| error.to_string())? {
+        let at = decoder
+            .position()
+            .map(|position| position.as_f64())
+            .unwrap_or(count as f64 / fps);
+        count += 1;
+        // The piece this frame is in: how many cuts it has passed, by its
+        // middle, so a frame a hair before a cut stays with the piece it
+        // mostly shows.
+        let piece = cuts.iter().filter(|cut| at + 0.5 / fps >= **cut).count();
+        if encoder.as_ref().is_none_or(|(open, _)| *open != piece) {
+            if let Some((_, mut done)) = encoder.take() {
+                done.finish().map_err(|error| error.to_string())?;
+            }
+            let path = folder.join(format!("Slot {:02}.mp4", piece + 1));
+            let opened = Encoder::create(&path, width, height, rate, &options)
+                .map_err(|error| error.to_string())?;
+            pieces[piece] = Some(path);
+            encoder = Some((piece, opened));
+        }
+        if let Some((_, open)) = encoder.as_mut() {
+            open.write_frame(&crate::enhance::crop(&frame, width, height))
+                .map_err(|error| error.to_string())?;
+        }
+    }
+    if let Some((_, mut done)) = encoder.take() {
+        done.finish().map_err(|error| error.to_string())?;
+    }
+    pieces
+        .into_iter()
+        .enumerate()
+        .map(|(index, piece)| piece.ok_or(format!("slot {} came out empty", index + 1)))
+        .collect()
 }
 
 fn agent() -> String {
@@ -440,17 +586,27 @@ pub fn import(
     let changes = crate::media::picture_changes(&video.to_string_lossy()).unwrap_or_default();
     let mut template = template;
     if template.seconds <= 0.0 {
-        template.seconds = changes.last().map_or(0.0, |(at, _, _)| *at);
+        template.seconds = changes.last().map_or(0.0, |(at, ..)| *at);
     }
-    let scores: Vec<(f64, f64)> = changes.iter().map(|(at, score, _)| (*at, *score)).collect();
+    let scores: Vec<(f64, f64)> = changes
+        .iter()
+        .map(|(at, score, ..)| (*at, *score))
+        .collect();
     let cuts = slot_cuts(&scores, template.slots, template.seconds);
-    let looks = cut_looks(&changes, &cuts);
+    let (cuts, looks) = settle_cuts(&changes, &cuts);
+    // Each slot its own short clip, so the bin holds the template's pieces
+    // one by one rather than the whole video thirty times over.
+    let pieces = cut_pieces(&video, &cuts, &folder.join("Slots")).unwrap_or_else(|error| {
+        log::warn!("capcut link: could not cut the preview into slots: {error}");
+        Vec::new()
+    });
     let draft = draft_for(
         &template,
         &video,
         &sound,
         &cuts,
         &looks,
+        &pieces,
         Path::new(&project.path),
     );
     let mut imported =
@@ -531,26 +687,30 @@ mod tests {
     }
 
     #[test]
-    fn a_flash_and_a_dip_are_told_from_a_plain_cut() {
-        // 30 fps, mid-grey footage; at 1 s a white frame, at 2 s a black
-        // one, at 3 s nothing but the cut.
-        let changes: Vec<(f64, f64, f64)> = (1..150)
+    fn a_flash_a_dip_and_a_whip_are_told_from_a_plain_cut() {
+        // 30 fps, mid-grey crisp footage; at 1 s a white frame, at 2 s a
+        // black one, from 2.97 to 3.1 s a motion blur, at 4 s nothing but
+        // the cut.
+        let changes: Vec<(f64, f64, f64, f64)> = (1..180)
             .map(|i| {
                 let at = i as f64 / 30.0;
-                let light = if i == 30 {
-                    250.0
-                } else if i == 60 {
-                    5.0
-                } else {
-                    120.0
+                let light = match i {
+                    30 => 250.0,
+                    60 => 5.0,
+                    _ => 120.0,
                 };
-                (at, 2.0, light)
+                let sharpness = if (89..=93).contains(&i) { 10.0 } else { 400.0 };
+                (at, 2.0, light, sharpness)
             })
             .collect();
-        assert_eq!(
-            cut_looks(&changes, &[1.0, 2.0, 3.0]),
-            vec![(1.0, "Flash"), (2.0, "Black")]
-        );
+        let (cuts, looks) = settle_cuts(&changes, &[1.0, 2.0, 2.97, 4.0]);
+        assert_eq!(looks.len(), 3);
+        assert_eq!(looks[0], (1.0, "Flash"));
+        assert_eq!(looks[1], (2.0, "Black"));
+        assert_eq!(looks[2].1, "Blur");
+        // The whip's cut sits in the middle of its blur, 2.97 to 3.1 s.
+        assert!((cuts[2] - (89.0 + 93.0) / 60.0).abs() < 1e-9, "{cuts:?}");
+        assert_eq!(cuts[3], 4.0);
     }
 
     #[test]
@@ -572,6 +732,7 @@ mod tests {
             Path::new("/p/s.mp4"),
             &[1.0, 2.0],
             &[(1.0, "Flash")],
+            &[],
             Path::new("/p"),
         );
         let imported = clipcut_project::capcut::import(&draft).expect("imports");

@@ -32,13 +32,13 @@ ClipCut updates itself. Open **Settings › Version** and press **Check for upda
 
 ## About
 
-ClipCut covers what most edits need: auto-captions, text-to-speech, background removal, keyframe animation, effects and titles, multi-track cutting, 4K export. No watermark, no account, no subscription, no upload.
+ClipCut covers what most edits need: auto-captions, text-to-speech, background removal, keyframe animation, effects and titles, multi-track cutting, 4K export. No account, no subscription, no upload.
 
 Everything runs on your machine. Install it, drop in footage, cut. The AI models for captions, voices and cutout download once from Settings and work offline after that. Your footage never leaves your disk.
 
 ## Highlights
 
-- 🚫 **No watermarks. No account. No paywall.**
+- 🚫 **No account. No paywall.**
 - 🔒 **100% local.** Nothing uploads. Works offline.
 - 💬 **Auto-captions.** Made on your machine. Pick a model size, get styled captions on the timeline.
 - 🗣️ **Text-to-speech and voice cloning.**

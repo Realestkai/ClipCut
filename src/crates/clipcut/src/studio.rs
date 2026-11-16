@@ -814,6 +814,8 @@ pub struct Models {
     pub sounds_mine: Rc<VecModel<crate::ui::SoundCardData>>,
     pub voices_saved: Rc<VecModel<crate::ui::VoiceCardData>>,
     pub sounds_clipcut: Rc<VecModel<crate::ui::SoundCardData>>,
+    /// The ClipCut shelf's categories after All.
+    pub sounds_categories: Rc<VecModel<SharedString>>,
     pub voices_builtin: Rc<VecModel<crate::ui::VoiceCardData>>,
     pub voice_styles: Rc<VecModel<crate::ui::VoiceCardData>>,
     pub transcribers: Rc<VecModel<ModelData>>,
@@ -831,6 +833,8 @@ pub struct Models {
     pub style_presets: Rc<VecModel<TextPresetData>>,
     /// The rest, by the writing they are for, for its Languages shelf.
     pub language_presets: Rc<VecModel<TextPresetData>>,
+    /// The watermark templates, for the Text page's Watermarks shelf.
+    pub watermark_presets: Rc<VecModel<TextPresetData>>,
     /// The families a title can be set in; see `Studio::font_families`.
     pub font_families: Rc<VecModel<SharedString>>,
     /// Those of them the font picker's search lets through.
@@ -899,6 +903,7 @@ impl Models {
             sounds_mine: Rc::new(VecModel::default()),
             voices_saved: Rc::new(VecModel::default()),
             sounds_clipcut: Rc::new(VecModel::default()),
+            sounds_categories: Rc::new(VecModel::default()),
             voices_builtin: Rc::new(VecModel::default()),
             voice_styles: Rc::new(VecModel::default()),
             transcribers: Rc::new(VecModel::default()),
@@ -911,6 +916,7 @@ impl Models {
             text_presets: Rc::new(VecModel::default()),
             style_presets: Rc::new(VecModel::default()),
             language_presets: Rc::new(VecModel::default()),
+            watermark_presets: Rc::new(VecModel::default()),
             font_families: Rc::new(VecModel::default()),
             font_matches: Rc::new(VecModel::default()),
             caption_styles: Rc::new(VecModel::default()),

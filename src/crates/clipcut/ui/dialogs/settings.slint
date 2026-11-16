@@ -8,6 +8,7 @@ import { Glyph, Icon } from "../icons.slint";
 import { Button, DialogSection, Field, Progress, Sheet } from "../primitives/modal.slint";
 import { IconButton } from "../primitives/panel.slint";
 import { SegmentedControl } from "../primitives/segmented-control.slint";
+import { Switch } from "../inspector/controls.slint";
 import { ColorPicker } from "../primitives/color-picker.slint";
 import { Fmt } from "../util.slint";
 import { Select } from "../primitives/select.slint";
@@ -723,6 +724,8 @@ export component SettingsDialog inherits Sheet {
     /// say "the other one"; a page with two named options can say which one is
     /// on, which is the whole reason it moved in here.
     callback theme-changed(dark: bool);
+    /// The Snow switch on Appearance.
+    callback snow-changed(on: bool);
     /// The look, as an index into `Theme.look-names`.
     callback look-changed(index: int);
     /// The accent, as an index into `Theme.accent-names`; -1 is the
@@ -1178,6 +1181,25 @@ export component SettingsDialog inherits Sheet {
                         options: [I18n.t("settings.dark"), I18n.t("settings.light")];
                         current: Theme.dark ? 0 : 1;
                         changed(index) => { root.theme-changed(index == 0); }
+                    }
+                }
+
+                // Snow over the window, under any look: a switch, set here
+                // at once and remembered by Rust.
+                DialogSection {
+                    ruled: false;
+                    title: I18n.t("settings.snow");
+                    hint: I18n.t("settings.snowHint");
+
+                    HorizontalLayout {
+                        alignment: start;
+                        Switch {
+                            checked: Theme.snow;
+                            toggled(on) => {
+                                Theme.snow = on;
+                                root.snow-changed(on);
+                            }
+                        }
                     }
                 }
 

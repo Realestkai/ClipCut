@@ -1,0 +1,22 @@
+id = "clipcut.watermark-handle"
+name = "Corner handle"
+language = "Latin"
+order = 4
+sample = "Aa"
+
+[style]
+content = "@yourname"
+fontFamily = "Inter"
+fontWeight = 600
+fontSize = 0.035
+color = "#ffffff"
+opacity = 0.8
+background = "#00000066"
+backgroundRadius = 0.01
+backgroundPaddingX = 0.012
+backgroundPaddingY = 0.006
+shadow = false
+
+[motion.in]
+kind = "fade"
+seconds = 0.4

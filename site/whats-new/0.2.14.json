@@ -1,0 +1,32 @@
+{
+  "items": [
+    {
+      "title": "CapCut templates, cut properly",
+      "text": "A CapCut template link now gives one short clip per slot, cut in the middle of the template's transitions, with its blurs, flashes and fades as ClipCut transitions. Right-click a slot and choose Replace clip to put yours in."
+    },
+    {
+      "title": "The sound library",
+      "text": "Audio › ClipCut sounds: free sound effects and music in categories, each with who made it. New sounds show up without updating the app."
+    },
+    {
+      "title": "Watermark templates",
+      "text": "Text › Watermarks: eight animated name and handle styles to sign your videos with."
+    },
+    {
+      "title": "16 new effects and transitions",
+      "text": "Zoom Pulse, Mirror, Kaleidoscope, Strobe, Cinema Bars, Wave Warp, Duotone and Light Sweep; Shake Cut, Ink Spread, Pixel Dissolve, Flash Zoom, Squeeze, Roll Up, Diamond Wipe and Split Open."
+    },
+    {
+      "title": "6 new text animations",
+      "text": "Stomp, Tilt, Shake, Elastic, Unfold and Whip."
+    },
+    {
+      "title": "Snow",
+      "text": "Settings › Appearance › Snow: snow falling over the window, with any look."
+    },
+    {
+      "title": "ClipCut watermark",
+      "text": "Exported videos carry a small ClipCut logo in the top-right corner."
+    }
+  ]
+}

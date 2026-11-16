@@ -1,0 +1,38 @@
+format = 2
+
+[effect]
+id = "clipcut.wave-warp"
+name = "Wave Warp"
+kind = "effect"
+category = "Distort"
+order = 12
+description = "The picture ripples side to side in moving waves, like heat haze or water."
+
+[[param]]
+key = "amount"
+label = "Amount"
+unit = "%"
+min = 0
+max = 100
+step = 1
+default = 40
+
+[[param]]
+key = "waves"
+label = "Waves"
+min = 1
+max = 20
+step = 1
+default = 6
+
+[[param]]
+key = "speed"
+label = "Speed"
+unit = "%"
+min = 0
+max = 100
+step = 1
+default = 50
+
+[wgsl]
+entry = "effect.wgsl"

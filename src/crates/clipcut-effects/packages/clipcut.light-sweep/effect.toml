@@ -1,0 +1,39 @@
+format = 2
+
+[effect]
+id = "clipcut.light-sweep"
+name = "Light Sweep"
+kind = "effect"
+category = "Light"
+order = 11
+description = "A band of light sweeps across the picture on a loop, like a shine over glass."
+
+[[param]]
+key = "strength"
+label = "Strength"
+unit = "%"
+min = 0
+max = 100
+step = 1
+default = 60
+
+[[param]]
+key = "speed"
+label = "Speed"
+unit = "%"
+min = 0
+max = 100
+step = 1
+default = 40
+
+[[param]]
+key = "width"
+label = "Width"
+unit = "%"
+min = 0
+max = 100
+step = 1
+default = 40
+
+[wgsl]
+entry = "effect.wgsl"

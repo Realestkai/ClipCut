@@ -1,0 +1,24 @@
+id = "clipcut.watermark-stamp"
+name = "Stamp"
+language = "Latin"
+order = 6
+sample = "Aa"
+
+[style]
+content = "YOUR NAME"
+fontFamily = "Black Ops One"
+fontWeight = 400
+fontSize = 0.06
+color = "#ffffff"
+strokeWidth = 0.004
+strokeColor = "#000000"
+tracking = 0.04
+shadow = false
+
+[motion.in]
+kind = "stomp"
+seconds = 0.45
+
+[motion.out]
+kind = "fade"
+seconds = 0.4

@@ -1,0 +1,23 @@
+format = 2
+
+[effect]
+id = "clipcut.split-open"
+name = "Split Open"
+kind = "transition"
+category = "Wipe"
+order = 11
+description = "The shot splits down the middle and its two halves slide apart like doors to show the next one."
+
+[[param]]
+key = "direction"
+label = "Direction"
+type = "enum"
+values = [0, 1]
+labels = ["Sideways", "Up and down"]
+default = 0
+min = 0
+max = 1
+
+[transition]
+fallback = "cross-fade"
+entry = "effect.wgsl"

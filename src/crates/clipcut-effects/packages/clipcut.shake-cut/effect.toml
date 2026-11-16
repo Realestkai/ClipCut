@@ -1,0 +1,22 @@
+format = 2
+
+[effect]
+id = "clipcut.shake-cut"
+name = "Shake Cut"
+kind = "transition"
+category = "Zoom"
+order = 10
+description = "The camera jolts and punches in on the cut, as an edit on a beat does."
+
+[[param]]
+key = "amount"
+label = "Amount"
+unit = "%"
+min = 0
+max = 100
+step = 1
+default = 60
+
+[transition]
+fallback = "cross-fade"
+entry = "effect.wgsl"

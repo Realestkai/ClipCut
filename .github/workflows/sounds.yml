@@ -1,0 +1,87 @@
+name: Sounds
+
+# The sound library, kept up to date from the repository: upload sound files
+# into audio/ and add a row for each to audio/sounds.csv (its name,
+# category, who made it, the licence, where it came from), on GitHub's own
+# pages or in a commit. This builds audio/manifest.json from the sheet,
+# uploads the files to the audio-v1 release the app downloads them from,
+# and commits the manifest. Every copy of ClipCut reads the manifest the
+# first time its Audio page is opened in a session, so a new sound shows up
+# within minutes, in every version, with no update. See
+# docs/AUDIO_LIBRARY.md.
+on:
+  push:
+    branches: [main]
+    paths:
+      - audio/**
+      - "!audio/manifest.json"
+      - scripts/sounds.py
+  workflow_dispatch:
+
+concurrency:
+  group: sounds
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish the sound list
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Tools
+        run: |
+          set -euo pipefail
+          command -v ffprobe || (sudo apt-get update -q && sudo apt-get install -y -q ffmpeg)
+
+      - name: Build the manifest
+        run: python3 scripts/sounds.py build | tee "$RUNNER_TEMP/build.log"
+
+      - name: Upload the files
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          on_release=$(gh release view audio-v1 --json assets --jq '.assets[].name' || true)
+          python3 - <<'EOF' > "$RUNNER_TEMP/wanted.txt"
+          import json
+          for sound in json.load(open("audio/manifest.json", encoding="utf-8"))["sounds"]:
+              print(sound["file"])
+          EOF
+          new=()
+          while IFS= read -r file; do
+            if ! grep -qxF "$file" <<<"$on_release"; then new+=("audio/$file"); fi
+          done < "$RUNNER_TEMP/wanted.txt"
+          if [ ${#new[@]} -gt 0 ]; then
+            gh release upload audio-v1 --clobber "${new[@]}"
+          fi
+          echo "${#new[@]} new file(s) uploaded"
+
+      - name: Commit the manifest
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- audio/manifest.json; then
+            echo "The list is unchanged."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add audio/manifest.json
+          git commit -m "Sounds: update the list"
+          git push
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### Sound library"
+            grep -v '^::' "$RUNNER_TEMP/build.log" || true
+            if grep -q '^::warning::' "$RUNNER_TEMP/build.log"; then
+              echo
+              echo "Left out:"
+              grep '^::warning::' "$RUNNER_TEMP/build.log" | sed 's/^::warning::/- /'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

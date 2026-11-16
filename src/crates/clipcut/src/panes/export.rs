@@ -509,6 +509,8 @@ impl ExportPane {
         request.height = height;
         request.rate_num = num;
         request.rate_den = den;
+        // ClipCut's mark in the corner of every video.
+        export::add_watermark(&mut request);
 
         studio.pause();
         // The monitor's readers that sit idle are closed now rather than

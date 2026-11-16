@@ -1,0 +1,29 @@
+id = "clipcut.watermark-end-card"
+name = "End card"
+language = "Latin"
+order = 5
+sample = "Aa"
+
+[style]
+content = "Your Name\nThanks for watching"
+fontFamily = "Montserrat"
+fontWeight = 800
+fontSize = 0.07
+color = "#ffffff"
+lineHeight = 1.2
+shadow = true
+
+[[style.runs]]
+start = 10
+end = 28
+fontWeight = 400
+fontScale = 0.45
+color = "#cfcfd6"
+
+[motion.in]
+kind = "pop"
+seconds = 0.5
+
+[motion.out]
+kind = "fade"
+seconds = 0.6

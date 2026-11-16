@@ -1,0 +1,31 @@
+format = 2
+
+[effect]
+id = "clipcut.duotone"
+name = "Duotone"
+kind = "effect"
+category = "Color"
+order = 20
+description = "The picture in two colours, its shadows in one and its highlights in the other."
+
+[[param]]
+key = "preset"
+label = "Colours"
+type = "enum"
+values = [0, 1, 2, 3]
+labels = ["Sunset", "Ocean", "Rose", "Mint"]
+default = 0
+min = 0
+max = 3
+
+[[param]]
+key = "amount"
+label = "Amount"
+unit = "%"
+min = 0
+max = 100
+step = 1
+default = 100
+
+[wgsl]
+entry = "effect.wgsl"

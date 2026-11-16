@@ -1,0 +1,22 @@
+format = 2
+
+[effect]
+id = "clipcut.diamond-wipe"
+name = "Diamond Wipe"
+kind = "transition"
+category = "Wipe"
+order = 10
+description = "The next shot opens from the centre in a growing diamond."
+
+[[param]]
+key = "softness"
+label = "Softness"
+unit = "%"
+min = 0
+max = 100
+step = 1
+default = 30
+
+[transition]
+fallback = "cross-fade"
+entry = "effect.wgsl"

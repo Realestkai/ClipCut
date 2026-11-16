@@ -1,0 +1,29 @@
+format = 2
+
+[effect]
+id = "clipcut.kaleidoscope"
+name = "Kaleidoscope"
+kind = "effect"
+category = "Distort"
+order = 11
+description = "The picture folded into mirrored wedges around the centre, turning slowly."
+
+[[param]]
+key = "segments"
+label = "Segments"
+min = 2
+max = 12
+step = 1
+default = 6
+
+[[param]]
+key = "spin"
+label = "Spin"
+unit = "%"
+min = 0
+max = 100
+step = 1
+default = 20
+
+[wgsl]
+entry = "effect.wgsl"

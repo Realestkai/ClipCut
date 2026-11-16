@@ -747,6 +747,8 @@ impl Api {
         request.height = height;
         request.rate_num = rate_num;
         request.rate_den = rate_den;
+        // ClipCut's mark in the corner of every video.
+        export::add_watermark(&mut request);
 
         let slot = self
             .exporter
