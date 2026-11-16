@@ -1,5 +1,12 @@
 {
   "_": {
+  "mediaPane.watermarks": "סימני מים",
+  "motion.elastic": "גמיש",
+  "motion.shake": "רעידה",
+  "motion.stomp": "רקיעה",
+  "motion.tilt": "הטיה",
+  "motion.unfold": "פריסה",
+  "motion.whip": "הצלפה",
     "name": "עברית"
   },
   "captions.addCaptions": "הוספת כתוביות",

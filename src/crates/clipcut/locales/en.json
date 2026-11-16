@@ -1,5 +1,12 @@
 {
   "_": {
+  "mediaPane.watermarks": "Watermarks",
+  "motion.elastic": "Elastic",
+  "motion.shake": "Shake",
+  "motion.stomp": "Stomp",
+  "motion.tilt": "Tilt",
+  "motion.unfold": "Unfold",
+  "motion.whip": "Whip",
     "name": "English"
   },
   "captions.addCaptions": "Add captions",

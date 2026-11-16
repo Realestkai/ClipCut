@@ -1795,6 +1795,8 @@ export component MediaPane inherits Rectangle {
     in property <[TextPresetData]> presets;
     /// The looks for other writing, on the Languages shelf beside Styles.
     in property <[TextPresetData]> language-presets;
+    /// The watermark templates' shelf.
+    in property <[TextPresetData]> watermark-presets;
     /// The effect catalogue's shelves, as Rust narrows them by the
     /// `Library` view: what the Effects, Filters and Transitions pages show.
     in property <[CatalogueEntryData]> catalogue-effects;
@@ -2276,6 +2278,14 @@ export component MediaPane inherits Rectangle {
                             current: root.text-category == 0;
                             clicked => { root.text-category = 0; }
                         }
+                        // A name or a handle to sign a video with, animated.
+                        if root.text-open: CategoryRow {
+                            height: 24px;
+                            label: I18n.t("mediaPane.watermarks");
+                            count: root.watermark-presets.length;
+                            current: root.text-category == 3;
+                            clicked => { root.text-category = 3; }
+                        }
                         // Beside Styles: the looks for other writing.
                         if root.text-open: CategoryRow {
                             height: 24px;
@@ -2729,7 +2739,9 @@ export component MediaPane inherits Rectangle {
 
                     PresetGrid {
                         horizontal-stretch: 1;
-                        items: root.text-category == 1 ? root.language-presets : root.presets;
+                        items: root.text-category == 1 ? root.language-presets
+                            : root.text-category == 3 ? root.watermark-presets
+                            : root.presets;
                         applied(id) => { root.add-text(id); }
                     }
                 }

@@ -1,5 +1,12 @@
 {
   "_": {
+  "mediaPane.watermarks": "Su nişanları",
+  "motion.elastic": "Elastik",
+  "motion.shake": "Silkələnmə",
+  "motion.stomp": "Tapdama",
+  "motion.tilt": "Əymə",
+  "motion.unfold": "Açılma",
+  "motion.whip": "Qamçı",
     "name": "Azərbaycanca"
   },
   "captions.addCaptions": "Subtitrlər əlavə et",

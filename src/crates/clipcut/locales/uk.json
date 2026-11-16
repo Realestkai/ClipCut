@@ -1,5 +1,12 @@
 {
   "_": {
+  "mediaPane.watermarks": "Водяні знаки",
+  "motion.elastic": "Пружина",
+  "motion.shake": "Трясіння",
+  "motion.stomp": "Удар",
+  "motion.tilt": "Нахил",
+  "motion.unfold": "Розгортання",
+  "motion.whip": "Ривок",
     "name": "Українська"
   },
   "captions.addCaptions": "Додати субтитри",

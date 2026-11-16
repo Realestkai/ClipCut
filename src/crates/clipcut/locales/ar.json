@@ -1,5 +1,12 @@
 {
   "_": {
+  "mediaPane.watermarks": "علامات مائية",
+  "motion.elastic": "مطاطي",
+  "motion.shake": "اهتزاز",
+  "motion.stomp": "دَوس",
+  "motion.tilt": "إمالة",
+  "motion.unfold": "انفتاح",
+  "motion.whip": "خطف",
     "name": "العربية"
   },
   "captions.addCaptions": "إضافة تسميات توضيحية",

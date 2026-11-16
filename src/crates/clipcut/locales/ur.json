@@ -1,5 +1,12 @@
 {
   "_": {
+  "mediaPane.watermarks": "واٹر مارکس",
+  "motion.elastic": "لچک دار",
+  "motion.shake": "لرزش",
+  "motion.stomp": "دھمک",
+  "motion.tilt": "جھکاؤ",
+  "motion.unfold": "کھلنا",
+  "motion.whip": "چابک",
     "name": "اردو"
   },
   "captions.addCaptions": "کیپشن شامل کریں",

@@ -1,5 +1,12 @@
 {
   "_": {
+  "mediaPane.watermarks": "ウォーターマーク",
+  "motion.elastic": "エラスティック",
+  "motion.shake": "シェイク",
+  "motion.stomp": "スタンプ",
+  "motion.tilt": "チルト",
+  "motion.unfold": "展開",
+  "motion.whip": "ウィップ",
     "name": "日本語"
   },
   "captions.addCaptions": "字幕を追加",

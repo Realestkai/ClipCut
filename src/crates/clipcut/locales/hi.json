@@ -1,5 +1,12 @@
 {
   "_": {
+  "mediaPane.watermarks": "वॉटरमार्क",
+  "motion.elastic": "लचीला",
+  "motion.shake": "हिलना",
+  "motion.stomp": "धमक",
+  "motion.tilt": "झुकाव",
+  "motion.unfold": "खुलना",
+  "motion.whip": "चाबुक",
     "name": "हिन्दी"
   },
   "captions.addCaptions": "कैप्शन जोड़ें",

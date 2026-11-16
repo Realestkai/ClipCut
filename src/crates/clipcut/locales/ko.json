@@ -1,5 +1,12 @@
 {
   "_": {
+  "mediaPane.watermarks": "워터마크",
+  "motion.elastic": "탄력",
+  "motion.shake": "흔들기",
+  "motion.stomp": "쾅",
+  "motion.tilt": "기울기",
+  "motion.unfold": "펼치기",
+  "motion.whip": "휙",
     "name": "한국어"
   },
   "captions.addCaptions": "Add captions",

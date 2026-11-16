@@ -1,0 +1,22 @@
+format = 2
+
+[effect]
+id = "clipcut.mirror"
+name = "Mirror"
+kind = "effect"
+category = "Distort"
+order = 10
+description = "One half of the picture reflected onto the other: left to right, right to left, top to bottom, or all four quarters."
+
+[[param]]
+key = "mode"
+label = "Mirror"
+type = "enum"
+values = [0, 1, 2, 3]
+labels = ["Left", "Right", "Top", "Four ways"]
+default = 0
+min = 0
+max = 3
+
+[wgsl]
+entry = "effect.wgsl"

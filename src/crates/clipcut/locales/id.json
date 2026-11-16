@@ -1,5 +1,12 @@
 {
   "_": {
+  "mediaPane.watermarks": "Tanda air",
+  "motion.elastic": "Elastis",
+  "motion.shake": "Guncang",
+  "motion.stomp": "Hentak",
+  "motion.tilt": "Miring",
+  "motion.unfold": "Membuka",
+  "motion.whip": "Cambuk",
     "name": "Bahasa Indonesia"
   },
   "captions.addCaptions": "Tambahkan subtitel",

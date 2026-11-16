@@ -1,5 +1,12 @@
 {
   "_": {
+  "mediaPane.watermarks": "Водяные знаки",
+  "motion.elastic": "Пружина",
+  "motion.shake": "Тряска",
+  "motion.stomp": "Удар",
+  "motion.tilt": "Наклон",
+  "motion.unfold": "Раскрытие",
+  "motion.whip": "Рывок",
     "name": "Русский"
   },
   "captions.addCaptions": "Добавить субтитры",

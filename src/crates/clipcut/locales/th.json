@@ -1,5 +1,12 @@
 {
   "_": {
+  "mediaPane.watermarks": "ลายน้ำ",
+  "motion.elastic": "ยืดหยุ่น",
+  "motion.shake": "สั่น",
+  "motion.stomp": "กระแทก",
+  "motion.tilt": "เอียง",
+  "motion.unfold": "คลี่ออก",
+  "motion.whip": "สะบัด",
     "name": "ไทย"
   },
   "captions.addCaptions": "เพิ่มคำบรรยาย",

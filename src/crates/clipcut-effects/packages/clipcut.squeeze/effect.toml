@@ -1,0 +1,22 @@
+format = 2
+
+[effect]
+id = "clipcut.squeeze"
+name = "Squeeze"
+kind = "transition"
+category = "Slide"
+order = 10
+description = "The shot is squeezed into a line down the middle, uncovering the next one behind it."
+
+[[param]]
+key = "shade"
+label = "Shadow"
+unit = "%"
+min = 0
+max = 100
+step = 1
+default = 40
+
+[transition]
+fallback = "cross-fade"
+entry = "effect.wgsl"

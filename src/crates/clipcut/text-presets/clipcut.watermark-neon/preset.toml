@@ -1,0 +1,22 @@
+id = "clipcut.watermark-neon"
+name = "Neon tag"
+language = "Latin"
+order = 7
+sample = "Aa"
+
+[style]
+content = "Your Name"
+fontFamily = "Hammersmith One"
+fontWeight = 400
+fontSize = 0.07
+color = "#e9fbff"
+strokeWidth = 0.007
+strokeColor = "#00e5ff"
+
+[motion.in]
+kind = "fade"
+seconds = 0.5
+
+[motion.loop]
+kind = "flicker"
+seconds = 2.0

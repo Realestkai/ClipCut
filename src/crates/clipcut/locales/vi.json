@@ -1,5 +1,12 @@
 {
   "_": {
+  "mediaPane.watermarks": "Hình mờ",
+  "motion.elastic": "Đàn hồi",
+  "motion.shake": "Rung",
+  "motion.stomp": "Dậm",
+  "motion.tilt": "Nghiêng",
+  "motion.unfold": "Mở ra",
+  "motion.whip": "Quất",
     "name": "Tiếng Việt"
   },
   "captions.addCaptions": "Thêm phụ đề",

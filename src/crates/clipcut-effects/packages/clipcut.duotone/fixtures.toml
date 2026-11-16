@@ -1,0 +1,19 @@
+# Colours in the working space: linear light, 1.0 the white of an SDR
+# picture. Each probe is the middle pixel of a flat picture.
+
+[[probe]]
+name = "default, Sunset in full"
+input = [0.8, 0.5, 0.3, 1]
+expect = [0.585393, 0.338617, 0.222533, 1]
+
+[[probe]]
+name = "at its least, nothing"
+at = "min"
+input = [0.8, 0.5, 0.3, 1]
+expect = [0.8, 0.5, 0.3, 1]
+
+[[probe]]
+name = "at its most, Mint in full"
+at = "max"
+input = [0.8, 0.5, 0.3, 1]
+expect = [0.302137, 0.571873, 0.466084, 1]

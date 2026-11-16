@@ -1,0 +1,23 @@
+id = "clipcut.watermark-minimal"
+name = "Minimal"
+language = "Latin"
+order = 8
+sample = "Aa"
+
+[style]
+content = "your name"
+fontFamily = "Hanken Grotesk"
+fontWeight = 400
+fontSize = 0.045
+color = "#ffffff"
+opacity = 0.85
+tracking = 0.15
+shadow = false
+
+[motion.in]
+kind = "rise"
+seconds = 0.6
+
+[motion.out]
+kind = "fade"
+seconds = 0.5

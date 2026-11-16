@@ -1,0 +1,27 @@
+id = "clipcut.watermark-glow"
+name = "Glow name"
+language = "Latin"
+order = 1
+sample = "Aa"
+
+[style]
+content = "Your Name"
+fontFamily = "DM Serif Display"
+fontWeight = 400
+fontSize = 0.075
+color = "#ffffff"
+strokeWidth = 0.004
+strokeColor = "#8fc8ff"
+shadow = true
+
+[motion.in]
+kind = "fade"
+seconds = 0.8
+
+[motion.loop]
+kind = "breathe"
+seconds = 3.0
+
+[motion.out]
+kind = "fade"
+seconds = 0.6

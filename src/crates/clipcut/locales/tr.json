@@ -1,5 +1,12 @@
 {
   "_": {
+  "mediaPane.watermarks": "Filigranlar",
+  "motion.elastic": "Esnek",
+  "motion.shake": "Sarsıntı",
+  "motion.stomp": "Damga",
+  "motion.tilt": "Eğme",
+  "motion.unfold": "Açılma",
+  "motion.whip": "Kamçı",
     "name": "Türkçe"
   },
   "captions.addCaptions": "Add captions",

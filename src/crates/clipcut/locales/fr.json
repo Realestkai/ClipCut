@@ -1,5 +1,12 @@
 {
   "_": {
+  "mediaPane.watermarks": "Filigranes",
+  "motion.elastic": "Élastique",
+  "motion.shake": "Secousse",
+  "motion.stomp": "Tampon",
+  "motion.tilt": "Bascule",
+  "motion.unfold": "Déplier",
+  "motion.whip": "Fouet",
     "name": "Français"
   },
   "captions.addCaptions": "Add captions",

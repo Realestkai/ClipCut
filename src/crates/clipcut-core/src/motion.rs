@@ -48,11 +48,23 @@ pub enum Move {
     Swing,
     /// Squashed flat and wide, springing back to shape.
     Squash,
+    /// Slams down from large, as if stamped onto the frame.
+    Stomp,
+    /// Tips in from an angle as it rises into place.
+    Tilt,
+    /// Shudders into place, the shaking dying away.
+    Shake,
+    /// Springs up from below past its place and settles with a wobble.
+    Elastic,
+    /// Opens from a line, top and bottom growing apart.
+    Unfold,
+    /// Whips across fast, stretched by its own speed.
+    Whip,
 }
 
 impl Move {
     /// Every move, in the order the picker lists them.
-    pub const ALL: [Move; 14] = [
+    pub const ALL: [Move; 20] = [
         Move::Fade,
         Move::SlideLeft,
         Move::SlideRight,
@@ -67,6 +79,12 @@ impl Move {
         Move::Flip,
         Move::Swing,
         Move::Squash,
+        Move::Stomp,
+        Move::Tilt,
+        Move::Shake,
+        Move::Elastic,
+        Move::Unfold,
+        Move::Whip,
     ];
 
     /// The move's name in documents and the API.
@@ -86,6 +104,12 @@ impl Move {
             Move::Flip => "flip",
             Move::Swing => "swing",
             Move::Squash => "squash",
+            Move::Stomp => "stomp",
+            Move::Tilt => "tilt",
+            Move::Shake => "shake",
+            Move::Elastic => "elastic",
+            Move::Unfold => "unfold",
+            Move::Whip => "whip",
         }
     }
 
@@ -168,6 +192,51 @@ impl Move {
                     pose.stretch_x = 1.0 + gone * 0.8;
                     pose.stretch_y = 1.0 - gone;
                 }
+            }
+            Move::Stomp => {
+                if s < 0.0 {
+                    let p = 1.0 - gone;
+                    pose.scale = 1.0 + 1.5 * (1.0 - p).powi(3);
+                    pose.opacity = (p * 4.0).min(1.0);
+                } else {
+                    pose.scale = 1.0 + 0.6 * gone * gone;
+                    pose.opacity = 1.0 - gone;
+                }
+            }
+            Move::Tilt => {
+                pose.rotation = travel * 25.0;
+                pose.dy = travel.abs() * 0.15;
+                pose.opacity = 1.0 - travel.abs().powf(1.5);
+            }
+            Move::Shake => {
+                // The shudder is strongest far from rest and gone at it.
+                let shudder = gone * gone;
+                pose.dx = 0.04 * shudder * (gone * 60.0).sin();
+                pose.rotation = 6.0 * shudder * (gone * 47.0).sin();
+                pose.opacity = if s < 0.0 {
+                    ((1.0 - gone) * 3.0).min(1.0)
+                } else {
+                    1.0 - gone
+                };
+            }
+            Move::Elastic => {
+                if s < 0.0 {
+                    let p = 1.0 - gone;
+                    pose.dy = (1.0 - elastic_out(p)) * 0.35;
+                    pose.opacity = (p * 4.0).min(1.0);
+                } else {
+                    pose.dy = gone * gone * 0.35;
+                    pose.opacity = 1.0 - gone;
+                }
+            }
+            Move::Unfold => {
+                pose.stretch_y = (1.0 - travel.abs()).max(0.0);
+                pose.opacity = 1.0 - travel.abs().powi(3);
+            }
+            Move::Whip => {
+                pose.dx = travel * 1.2;
+                pose.stretch_x = 1.0 + travel.abs() * 1.5;
+                pose.opacity = 1.0 - travel.abs() * 0.5;
             }
         }
         pose

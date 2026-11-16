@@ -833,6 +833,8 @@ pub struct Models {
     pub style_presets: Rc<VecModel<TextPresetData>>,
     /// The rest, by the writing they are for, for its Languages shelf.
     pub language_presets: Rc<VecModel<TextPresetData>>,
+    /// The watermark templates, for the Text page's Watermarks shelf.
+    pub watermark_presets: Rc<VecModel<TextPresetData>>,
     /// The families a title can be set in; see `Studio::font_families`.
     pub font_families: Rc<VecModel<SharedString>>,
     /// Those of them the font picker's search lets through.
@@ -914,6 +916,7 @@ impl Models {
             text_presets: Rc::new(VecModel::default()),
             style_presets: Rc::new(VecModel::default()),
             language_presets: Rc::new(VecModel::default()),
+            watermark_presets: Rc::new(VecModel::default()),
             font_families: Rc::new(VecModel::default()),
             font_matches: Rc::new(VecModel::default()),
             caption_styles: Rc::new(VecModel::default()),

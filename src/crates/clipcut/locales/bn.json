@@ -1,5 +1,12 @@
 {
   "_": {
+  "mediaPane.watermarks": "জলছাপ",
+  "motion.elastic": "স্থিতিস্থাপক",
+  "motion.shake": "কাঁপা",
+  "motion.stomp": "স্ট্যাম্প",
+  "motion.tilt": "হেলানো",
+  "motion.unfold": "খোলা",
+  "motion.whip": "চাবুক",
     "name": "বাংলা"
   },
   "captions.addCaptions": "ক্যাপশন যোগ করুন",

@@ -1,5 +1,12 @@
 {
   "_": {
+  "mediaPane.watermarks": "Vodeni žigovi",
+  "motion.elastic": "Elastično",
+  "motion.shake": "Tresenje",
+  "motion.stomp": "Udarac",
+  "motion.tilt": "Nagib",
+  "motion.unfold": "Rasklapanje",
+  "motion.whip": "Bič",
     "name": "Hrvatski"
   },
   "captions.addCaptions": "Dodaj titlove",

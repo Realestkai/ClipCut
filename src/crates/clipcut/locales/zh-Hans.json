@@ -1,5 +1,12 @@
 {
   "_": {
+  "mediaPane.watermarks": "水印",
+  "motion.elastic": "弹性",
+  "motion.shake": "抖动",
+  "motion.stomp": "重压",
+  "motion.tilt": "倾斜",
+  "motion.unfold": "展开",
+  "motion.whip": "甩入",
     "name": "简体中文"
   },
   "captions.addCaptions": "添加字幕",

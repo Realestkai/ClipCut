@@ -1,0 +1,28 @@
+id = "clipcut.watermark-orbit"
+name = "Orbit tag"
+language = "Latin"
+order = 3
+sample = "Aa"
+
+[style]
+content = "Your Name."
+fontFamily = "Space Grotesk"
+fontWeight = 700
+fontSize = 0.06
+color = "#f4f1ff"
+strokeWidth = 0.003
+strokeColor = "#b48cff"
+tracking = 0.02
+shadow = true
+
+[motion.in]
+kind = "zoom-out"
+seconds = 0.6
+
+[motion.loop]
+kind = "float"
+seconds = 3.0
+
+[motion.out]
+kind = "zoom-in"
+seconds = 0.5

@@ -1,0 +1,22 @@
+format = 2
+
+[effect]
+id = "clipcut.flash-zoom"
+name = "Flash Zoom"
+kind = "transition"
+category = "Light"
+order = 10
+description = "The shot rushes in towards the camera, a flash of white hides the cut, and the next one pulls back out of it."
+
+[[param]]
+key = "flash"
+label = "Flash"
+unit = "%"
+min = 0
+max = 100
+step = 1
+default = 70
+
+[transition]
+fallback = "cross-fade"
+entry = "effect.wgsl"

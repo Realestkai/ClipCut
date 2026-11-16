@@ -96,13 +96,13 @@ cards = "\n".join(
 )
 
 page("index.html", "ClipCut - the free video editor for Windows and Mac",
-     "ClipCut is a free video editor for Windows and macOS. Auto-captions, effects, keyframes and 4K export, with no watermark, no account and no subscription.",
+     "ClipCut is a free video editor for Windows and macOS. Auto-captions, effects, keyframes and 4K export, with no account and no subscription.",
      f"""  <main>
     <section class="hero">
       <div class="wrap">
         <img class="mark" src="assets/icon.png" alt="">
         <h1>Edit videos. Keep everything.</h1>
-        <p class="lead">ClipCut is a free video editor for Windows and Mac. No watermark, no account, no subscription, and your footage never leaves your computer.</p>
+        <p class="lead">ClipCut is a free video editor for Windows and Mac. No account, no subscription, and your footage never leaves your computer.</p>
         <div class="buttons" id="download">
           <a class="btn" data-os="windows" data-download="windows-x86_64-setup.exe" href="{RELEASES}">Download for Windows <small data-size></small></a>
           <a class="btn" data-os="mac" data-download="macos-arm64.dmg" href="{RELEASES}">Mac, Apple silicon <small data-size></small></a>

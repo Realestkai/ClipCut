@@ -1,5 +1,12 @@
 {
   "_": {
+  "mediaPane.watermarks": "Watermerken",
+  "motion.elastic": "Elastisch",
+  "motion.shake": "Schudden",
+  "motion.stomp": "Stampen",
+  "motion.tilt": "Kantelen",
+  "motion.unfold": "Openvouwen",
+  "motion.whip": "Zweep",
     "name": "Nederlands"
   },
   "captions.addCaptions": "Ondertitels toevoegen",

@@ -1,5 +1,12 @@
 {
   "_": {
+  "mediaPane.watermarks": "Marcas d'água",
+  "motion.elastic": "Elástico",
+  "motion.shake": "Tremer",
+  "motion.stomp": "Pisão",
+  "motion.tilt": "Inclinar",
+  "motion.unfold": "Desdobrar",
+  "motion.whip": "Chicote",
     "name": "Português (Brasil)"
   },
   "captions.addCaptions": "Adicionar legendas",

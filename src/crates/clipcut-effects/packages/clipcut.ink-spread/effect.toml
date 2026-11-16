@@ -1,0 +1,22 @@
+format = 2
+
+[effect]
+id = "clipcut.ink-spread"
+name = "Ink Spread"
+kind = "transition"
+category = "Dissolve"
+order = 10
+description = "The next shot bleeds in from the middle through a ragged edge, like ink spreading on paper."
+
+[[param]]
+key = "scale"
+label = "Detail"
+unit = "%"
+min = 0
+max = 100
+step = 1
+default = 50
+
+[transition]
+fallback = "cross-fade"
+entry = "effect.wgsl"

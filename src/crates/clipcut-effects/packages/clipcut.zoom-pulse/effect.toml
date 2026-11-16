@@ -1,0 +1,30 @@
+format = 2
+
+[effect]
+id = "clipcut.zoom-pulse"
+name = "Zoom Pulse"
+kind = "effect"
+category = "Shake"
+order = 10
+description = "The picture punches in on every beat and eases back, like a cut timed to the music."
+
+[[param]]
+key = "amount"
+label = "Amount"
+unit = "%"
+min = 0
+max = 100
+step = 1
+default = 40
+
+[[param]]
+key = "bpm"
+label = "Tempo"
+unit = "BPM"
+min = 40
+max = 200
+step = 1
+default = 120
+
+[wgsl]
+entry = "effect.wgsl"

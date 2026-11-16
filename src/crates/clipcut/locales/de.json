@@ -1,5 +1,12 @@
 {
   "_": {
+  "mediaPane.watermarks": "Wasserzeichen",
+  "motion.elastic": "Elastisch",
+  "motion.shake": "Schütteln",
+  "motion.stomp": "Stampfen",
+  "motion.tilt": "Kippen",
+  "motion.unfold": "Aufklappen",
+  "motion.whip": "Peitsche",
     "name": "Deutsch"
   },
   "captions.addCaptions": "Add captions",

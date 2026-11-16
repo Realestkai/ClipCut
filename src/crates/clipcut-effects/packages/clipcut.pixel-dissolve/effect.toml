@@ -1,0 +1,22 @@
+format = 2
+
+[effect]
+id = "clipcut.pixel-dissolve"
+name = "Pixel Dissolve"
+kind = "transition"
+category = "Glitch"
+order = 10
+description = "The picture breaks into blocks that flip to the next shot one by one."
+
+[[param]]
+key = "size"
+label = "Block Size"
+unit = "%"
+min = 0
+max = 100
+step = 1
+default = 50
+
+[transition]
+fallback = "cross-fade"
+entry = "effect.wgsl"

@@ -428,7 +428,7 @@ pub fn cut_pieces(
         DecodeOptions, Decoder, EncodeOptions, Encoder, FrameSink, FrameSource, RateMode,
         VideoCodec,
     };
-    let info = clipcut_media::probe(&video.to_string_lossy()).map_err(|error| error.to_string())?;
+    let info = clipcut_media::probe(video).map_err(|error| error.to_string())?;
     let stream = info
         .video
         .as_ref()

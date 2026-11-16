@@ -1,0 +1,22 @@
+format = 2
+
+[effect]
+id = "clipcut.roll-up"
+name = "Roll Up"
+kind = "transition"
+category = "Slide"
+order = 11
+description = "The shot rolls up out of the frame with a smear of speed and the next one follows it in from below."
+
+[[param]]
+key = "blur"
+label = "Motion Blur"
+unit = "%"
+min = 0
+max = 100
+step = 1
+default = 50
+
+[transition]
+fallback = "cross-fade"
+entry = "effect.wgsl"

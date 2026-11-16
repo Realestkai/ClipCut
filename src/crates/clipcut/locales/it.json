@@ -1,5 +1,12 @@
 {
   "_": {
+  "mediaPane.watermarks": "Filigrane",
+  "motion.elastic": "Elastico",
+  "motion.shake": "Scossa",
+  "motion.stomp": "Timbro",
+  "motion.tilt": "Inclina",
+  "motion.unfold": "Spiega",
+  "motion.whip": "Frustata",
     "name": "Italiano"
   },
   "captions.addCaptions": "Add captions",

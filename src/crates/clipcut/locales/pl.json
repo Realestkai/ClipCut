@@ -1,5 +1,12 @@
 {
   "_": {
+  "mediaPane.watermarks": "Znaki wodne",
+  "motion.elastic": "Sprężysty",
+  "motion.shake": "Wstrząs",
+  "motion.stomp": "Tupnięcie",
+  "motion.tilt": "Przechył",
+  "motion.unfold": "Rozłożenie",
+  "motion.whip": "Bicz",
     "name": "Polski"
   },
   "captions.addCaptions": "Dodaj napisy",

@@ -1,5 +1,12 @@
 {
   "_": {
+  "mediaPane.watermarks": "Marcas de agua",
+  "motion.elastic": "Elástico",
+  "motion.shake": "Sacudida",
+  "motion.stomp": "Pisotón",
+  "motion.tilt": "Inclinar",
+  "motion.unfold": "Desplegar",
+  "motion.whip": "Látigo",
     "name": "Español"
   },
   "captions.addCaptions": "Añadir subtítulos",

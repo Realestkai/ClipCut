@@ -1,5 +1,12 @@
 {
   "_": {
+  "mediaPane.watermarks": "واترمارک‌ها",
+  "motion.elastic": "کشسان",
+  "motion.shake": "لرزش",
+  "motion.stomp": "کوبش",
+  "motion.tilt": "کج‌شدن",
+  "motion.unfold": "بازشدن",
+  "motion.whip": "شلاقی",
     "name": "فارسی"
   },
   "captions.addCaptions": "افزودن زیرنویس",
