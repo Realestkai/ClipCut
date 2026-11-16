@@ -898,6 +898,9 @@ fn start(project: Option<std::path::PathBuf>, smoke: bool) -> Result<(), slint::
     app.on_start_import_capcut(on_window!(|state| {
         state.handle(Msg::Start(StartMsg::ImportCapcut));
     }));
+    app.on_start_import_capcut_link(on_window!(|state, text: SharedString| {
+        state.handle(Msg::Start(StartMsg::ImportCapcutLink(text.to_string())));
+    }));
     app.on_start_open_recent(on_window!(|state, path: SharedString| {
         state.handle(Msg::Start(StartMsg::OpenRecent(path.to_string())));
     }));

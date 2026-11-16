@@ -627,6 +627,13 @@ impl SettingsPane {
                         studio.notify(&tf("settings.installerOpened", &[&version]), false);
                         quit_for_switch("for an update", || {});
                     }
+                    Ok(Installed::UpdaterRunning) => {
+                        log::info!(
+                            "update: the updater installs {version} once ClipCut closes, then starts it"
+                        );
+                        studio.notify(&tf("settings.versionInstalling", &[&version]), false);
+                        quit_for_switch("for an update", || {});
+                    }
                     Ok(Installed::Replaced) => {
                         // The bundle on disk is already the new build; what
                         // is left is to start it, and that waits on the

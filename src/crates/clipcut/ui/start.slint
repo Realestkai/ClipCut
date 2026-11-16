@@ -3,7 +3,7 @@
 
 import { I18n } from "i18n.slint";
 import { Theme } from "theme/theme.slint";
-import { CopyChip, Modal } from "primitives/modal.slint";
+import { Button, CopyChip, Field, Modal } from "primitives/modal.slint";
 import { FocusRing } from "primitives/focus-ring.slint";
 import { Glyph, Icon } from "icons.slint";
 import { ThinScrollbar } from "primitives/scrollbar.slint";
@@ -1616,12 +1616,17 @@ component WideHome inherits Rectangle {
     callback compose();
     callback open();
     callback import-capcut();
+    /// Make a project of the CapCut template the pasted link points at.
+    callback import-capcut-link(text: string);
     callback open-recent(path: string);
     callback forget-recent(path: string);
     callback reveal-recent(path: string);
     callback search-edited(query: string);
     callback sort-changed(sort: int);
     callback link(name: string);
+
+    /// What is typed in the CapCut link field.
+    property <string> capcut-link;
 
     /// The margin the page keeps from the window's edges.
     property <length> pad: Math.max(24px, Math.min(64px, root.width / 18));
@@ -1725,6 +1730,26 @@ component WideHome inherits Rectangle {
                         note: I18n.t("start.importCapcutNote");
                         enabled: !root.busy;
                         clicked => { root.import-capcut(); }
+                    }
+                }
+
+                Rectangle { height: 14px; }
+
+                // ── a CapCut template, from its share link ───────────
+                HorizontalLayout {
+                    spacing: 8px;
+
+                    Field {
+                        value: root.capcut-link;
+                        placeholder: I18n.t("start.capcutLinkPlaceholder");
+                        edited(text) => { root.capcut-link = text; }
+                    }
+
+                    Button {
+                        glyph: Glyph.import;
+                        label: I18n.t("start.capcutLinkImport");
+                        enabled: !root.busy && root.capcut-link != "";
+                        clicked => { root.import-capcut-link(root.capcut-link); }
                     }
                 }
 
@@ -2099,6 +2124,8 @@ export component StartScreen inherits Rectangle {
     callback open();
     /// Make a project of a CapCut draft, picked from CapCut's drafts.
     callback import-capcut();
+    /// Make a project of the CapCut template a share link points at.
+    callback import-capcut-link(text: string);
     callback open-recent(path: string);
     callback forget-recent(path: string);
     callback reveal-recent(path: string);
@@ -2127,6 +2154,7 @@ export component StartScreen inherits Rectangle {
         compose => { root.compose(); }
         open => { root.open(); }
         import-capcut => { root.import-capcut(); }
+        import-capcut-link(text) => { root.import-capcut-link(text); }
         open-recent(path) => { root.open-recent(path); }
         forget-recent(path) => { root.forget-recent(path); }
         reveal-recent(path) => { root.reveal-recent(path); }

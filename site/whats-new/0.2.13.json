@@ -1,0 +1,16 @@
+{
+  "items": [
+    {
+      "title": "Updates without the setup wizard",
+      "text": "On Windows, an update from Settings › Version now installs in ClipCut's own small window and opens the new version by itself. No more clicking through the installer."
+    },
+    {
+      "title": "CapCut template links",
+      "text": "Paste a CapCut template's share link on the launch screen and press Import template. You get a project in the template's size, with its music on its own track and its cuts laid out as clips. Put your own clips over them and they land on the beat."
+    },
+    {
+      "title": "Updates arrive sooner",
+      "text": "Windows updates are published as soon as they are built, without waiting for the Mac versions."
+    }
+  ]
+}

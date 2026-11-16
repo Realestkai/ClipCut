@@ -141,6 +141,11 @@ pub fn releases_from_json(json: &str) -> Result<Vec<Release>, String> {
             if version < FIRST_SWITCHABLE {
                 return None;
             }
+            // Windows publishes before the Macs: a release whose files do
+            // not include this machine's yet is not offered until they do.
+            if !carries_own_bundle(entry, std::env::consts::OS, std::env::consts::ARCH) {
+                return None;
+            }
             let published = entry
                 .get("published_at")
                 .and_then(serde_json::Value::as_str)
@@ -158,6 +163,26 @@ pub fn releases_from_json(json: &str) -> Result<Vec<Release>, String> {
     releases.sort_by(|a, b| b.version.cmp(&a.version));
     releases.dedup_by(|a, b| a.version == b.version);
     Ok(releases)
+}
+
+/// Whether a release's files include one for `os` on `arch`:
+/// `ClipCut-0.2.13-windows-x86_64-setup.exe`, `ClipCut-0.2.13-macos-arm64.dmg`.
+/// A release GitHub lists without its files, and any machine that is
+/// neither Windows nor a Mac, passes.
+fn carries_own_bundle(entry: &serde_json::Value, os: &str, arch: &str) -> bool {
+    let Some(assets) = entry.get("assets").and_then(serde_json::Value::as_array) else {
+        return true;
+    };
+    if assets.is_empty() || !matches!(os, "windows" | "macos") {
+        return true;
+    }
+    let mark = format!("-{os}-{}", manifest_arch(os, arch));
+    assets.iter().any(|asset| {
+        asset
+            .get("name")
+            .and_then(serde_json::Value::as_str)
+            .is_some_and(|name| name.contains(&mark))
+    })
 }
 
 /// The `message` of a GitHub error body, or the body's first line.
@@ -476,6 +501,9 @@ pub fn download_package(
 pub enum Installed {
     /// The installer is running: the app closes so it can finish.
     InstallerRunning,
+    /// ClipCut's updater window is waiting for the app to close; it
+    /// installs the new version quietly and starts it.
+    UpdaterRunning,
     /// The new build is in this one's place: the app closes and
     /// [`relaunch`] starts it.
     Replaced,
@@ -488,7 +516,14 @@ pub enum Installed {
 /// this build's place.
 pub fn install(package: &Path, kind: PackageKind) -> Result<Installed, String> {
     match kind {
+        // ClipCut's own updater window when the install has one: it waits
+        // for the app to close, runs the setup without its wizard, and
+        // starts the new version. The setup itself, wizard and all, when
+        // it does not (a build from before 0.2.13) or cannot be started.
         PackageKind::Setup => {
+            if let Some(started) = start_updater(package) {
+                return Ok(started);
+            }
             Command::new(package)
                 .spawn()
                 .map_err(|error| format!("could not start {}: {error}", package.display()))?;
@@ -511,6 +546,43 @@ pub fn install(package: &Path, kind: PackageKind) -> Result<Installed, String> {
             Ok(Installed::Opened)
         }
     }
+}
+
+/// Starts `clipcut-updater.exe` on `setup`, from a copy beside the
+/// download: the setup replaces the install folder, the updater's own file
+/// included, so it must not run from there. `None` when there is no updater
+/// beside this program or it would not start.
+fn start_updater(setup: &Path) -> Option<Installed> {
+    let app = std::env::current_exe().ok()?;
+    let shipped = app.parent()?.join("clipcut-updater.exe");
+    if !shipped.is_file() {
+        return None;
+    }
+    let copy = setup.parent()?.join("clipcut-updater.exe");
+    std::fs::copy(&shipped, &copy).ok()?;
+    // ClipCut-0.2.13-windows-x86_64-setup.exe -> 0.2.13, for the window.
+    let version = setup
+        .file_name()
+        .and_then(|name| name.to_str())
+        .and_then(|name| name.strip_prefix("ClipCut-"))
+        .and_then(|rest| rest.split('-').next())
+        .unwrap_or_default()
+        .to_owned();
+    Command::new(&copy)
+        .arg("--setup")
+        .arg(setup)
+        .arg("--wait")
+        .arg(std::process::id().to_string())
+        .arg("--app")
+        .arg(&app)
+        .arg("--version")
+        .arg(version)
+        .stdin(std::process::Stdio::null())
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null())
+        .spawn()
+        .ok()?;
+    Some(Installed::UpdaterRunning)
 }
 
 /// The `.app` this process runs from, or `None` for a bare binary.
@@ -756,6 +828,28 @@ fn get_text(url: &str) -> Result<String, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_release_waits_for_this_machines_own_file() {
+        let windows_only: serde_json::Value = serde_json::json!({"assets": [
+            {"name": "ClipCut-0.2.13-windows-x86_64-setup.exe"},
+            {"name": "manifest.json"}
+        ]});
+        assert!(carries_own_bundle(&windows_only, "windows", "x86_64"));
+        assert!(!carries_own_bundle(&windows_only, "macos", "aarch64"));
+        let both: serde_json::Value = serde_json::json!({"assets": [
+            {"name": "ClipCut-0.2.13-windows-x86_64-setup.exe"},
+            {"name": "ClipCut-0.2.13-macos-arm64.dmg"}
+        ]});
+        assert!(carries_own_bundle(&both, "macos", "aarch64"));
+        assert!(!carries_own_bundle(&both, "macos", "x86_64"));
+        // Listed without its files: offered, as before.
+        assert!(carries_own_bundle(
+            &serde_json::json!({}),
+            "macos",
+            "x86_64"
+        ));
+    }
 
     #[test]
     fn a_version_reads_a_tag_and_orders_by_its_numbers() {

@@ -386,12 +386,26 @@ def main() -> int:
     emit.add_argument("--tag", required=True)
     emit.add_argument("--bundles", type=pathlib.Path)
     emit.add_argument("--out", type=pathlib.Path)
+    emit.add_argument(
+        "--merge",
+        type=pathlib.Path,
+        help="a manifest.json the release already carries: its bundles are kept beside these",
+    )
 
     args = parser.parse_args()
     if args.command == "mirror":
         return mirror(args.out, args.only)
     if args.command == "release-manifest":
         manifest = release_manifest(args.version, args.tag, args.bundles)
+        # Windows and the Macs publish separately, each as soon as it is
+        # built: the second keeps the first one's rows.
+        if args.merge and args.merge.is_file():
+            earlier = json.loads(args.merge.read_text(encoding="utf-8")).get("binaries", {})
+            for platform, arches in earlier.items():
+                for arch, kinds in arches.items():
+                    for kind, entry in kinds.items():
+                        mine = manifest["binaries"].setdefault(platform, {}).setdefault(arch, {})
+                        mine.setdefault(kind, entry)
         text = json.dumps(manifest, indent=2) + "\n"
         if args.out:
             args.out.write_text(text, encoding="utf-8")

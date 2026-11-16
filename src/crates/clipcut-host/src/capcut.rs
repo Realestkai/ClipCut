@@ -142,6 +142,25 @@ pub struct Import {
     pub notes: Vec<String>,
 }
 
+/// A project name under `location` that no folder has yet: `base`, then
+/// "`base` 2", and so on.
+pub fn free_name(location: &str, base: &str) -> String {
+    (1..)
+        .map(|number| {
+            if number == 1 {
+                base.to_owned()
+            } else {
+                format!("{base} {number}")
+            }
+        })
+        .find(|name| {
+            !Path::new(location)
+                .join(projects::folder_name(name))
+                .exists()
+        })
+        .expect("a free name")
+}
+
 /// Imports the CapCut draft in `folder` as a new project under `location`,
 /// in a folder named after the draft - "Reel", then "Reel 2" if that is
 /// taken - and writes its whole document there.
@@ -155,20 +174,7 @@ pub fn import(folder: &Path, location: &str) -> Result<Import, String> {
     } else {
         base
     };
-    let name = (1..)
-        .map(|number| {
-            if number == 1 {
-                base.to_owned()
-            } else {
-                format!("{base} {number}")
-            }
-        })
-        .find(|name| {
-            !Path::new(location)
-                .join(projects::folder_name(name))
-                .exists()
-        })
-        .expect("a free name");
+    let name = free_name(location, base);
     let project = projects::create(
         location,
         &name,

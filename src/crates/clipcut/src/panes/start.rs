@@ -48,6 +48,9 @@ pub enum StartMsg {
     OpenChosen(PathBuf),
     /// Make a project of a CapCut draft, picked from CapCut's drafts.
     ImportCapcut,
+    /// Make a project of the CapCut template a pasted share link points
+    /// at: its frame, its sound and its cuts.
+    ImportCapcutLink(String),
     OpenRecent(String),
     ForgetRecent(String),
     /// Show a project's folder in the file manager.
@@ -318,6 +321,33 @@ impl StartPane {
                     move || platform::pick_folder(&title, &drafts),
                     |studio, _, _, folder| {
                         studio.handle(crate::panes::Msg::Start(StartMsg::OpenChosen(folder)));
+                    },
+                );
+            }
+            StartMsg::ImportCapcutLink(text) => {
+                if clipcut_host::capcut_link::find_link(&text).is_none() {
+                    studio.notify(&t("start.capcutLinkNotLink"), true);
+                    return;
+                }
+                studio.notify(&t("start.capcutLinkWorking"), false);
+                let location = self.location.clone();
+                crate::host::spawn(
+                    move || clipcut_host::capcut_link::import(&text, &location, &mut |_, _| {}),
+                    |studio, _, _, imported| match imported {
+                        Ok(import) => {
+                            if let Err(error) = studio.open_project(import.project) {
+                                studio.notify(&error, true);
+                                return;
+                            }
+                            for note in &import.notes {
+                                log::info!("capcut link: {note}");
+                            }
+                            studio.notify(&t("start.capcutLinkImported"), false);
+                        }
+                        Err(error) => {
+                            log::error!("capcut link: the import failed: {error}");
+                            studio.notify(&tf("start.capcutLinkFailed", &[&error]), true);
+                        }
                     },
                 );
             }

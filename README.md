@@ -80,7 +80,7 @@ cargo fmt --check && cargo clippy --all-targets -- -D warnings   # what CI check
 1. Change `version` near the top of `src/Cargo.toml` (for example `0.2.11` to `0.2.12`).
 2. Commit and push to `main`.
 
-GitHub Actions builds the Windows installer and both Mac disk images, launches each one to check it starts, and publishes them as a release tagged `v<version>`. Every installed copy of ClipCut offers the new version from then on. A push that does not change the version releases nothing.
+GitHub Actions builds the Windows installer and both Mac disk images side by side, launches each one to check it starts, and publishes a release tagged `v<version>`. Windows is published the moment its build is done, without waiting for the Macs, which add their disk images when theirs are. Every installed copy of ClipCut offers the new version as soon as its own file is up. On Windows the update installs in ClipCut's own small window, with no setup wizard, and the app opens again by itself. A push that does not change the version releases nothing.
 
 ## Licence
 

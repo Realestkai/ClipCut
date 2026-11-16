@@ -53,6 +53,10 @@ on:
         description: The ref to build, when it is not the one this runs on
         type: string
         default: ""
+      platform:
+        description: windows or macos to build that platform only; empty for both
+        type: string
+        default: ""
     secrets:
       APPLE_CERTIFICATE_P12:
         description: Base64 of a Developer ID Application .p12
@@ -147,6 +151,11 @@ jobs:
           # Its row was platform windows, arch aarch64, os windows-11-arm,
           # target aarch64-pc-windows-msvc, ffmpeg winarm64, ort
           # win-arm64, llvm woa64, vc and inno and wix arm64.
+        # `platform: windows` or `macos` builds that platform's rows only,
+        # so release.yml can publish Windows without waiting on the Macs.
+        exclude:
+          - platform: ${{ inputs.platform == 'windows' && 'macos' || 'none' }}
+          - platform: ${{ inputs.platform == 'macos' && 'windows' || 'none' }}
     runs-on: ${{ matrix.os }}
     # The slowest target is Intel macOS, whose build alone ran past an hour
     # in v0.2.7-rc.1. The steps that can hang have timeouts of their own,
@@ -426,6 +435,15 @@ jobs:
         run: |
           set -o pipefail
           cargo build --profile app -p clipcut --target ${{ matrix.target }} 2>&1 | tee build.log
+          # Windows: the small updater window that installs an update from
+          # Settings > Version without the setup wizard. It runs from a copy
+          # outside the install folder, away from the Visual C++ runtime
+          # shipped there, so its C runtime is linked in. A target folder of
+          # its own keeps those flags from touching the app's cache.
+          if [ "${{ matrix.platform }}" = windows ]; then
+            RUSTFLAGS="-C target-feature=+crt-static" cargo build --release -p clipcut-updater \
+              --target ${{ matrix.target }} --target-dir target/updater 2>&1 | tee -a build.log
+          fi
 
       - name: Build log to the summary (failure only)
         if: failure()
@@ -612,6 +630,7 @@ jobs:
           $dir = "stage\$name"
           New-Item -ItemType Directory -Force $dir | Out-Null
           Copy-Item "src\target\${{ matrix.target }}\app\clipcut.exe" $dir
+          Copy-Item "src\target\updater\${{ matrix.target }}\release\clipcut-updater.exe" $dir
           Copy-Item "$env:FFMPEG_DIR\bin\*.dll" $dir
           Copy-Item "$env:ORT_DIR\lib\*.dll" $dir
           # whisper's DLLs and its CPU modules, one per x86_64 generation
