@@ -87,4 +87,8 @@ whisper.dll                    48    0     0      0          0
 # the count shown, without the `~`, so the next library compiled for
 # Haswell fails the build.
 clipcut.exe                     -     -     ~1000  -          -
+# The updater window links the C runtime statically (it runs from a copy
+# away from the runtime DLLs), and the UCRT's math - cos, fmod - carries
+# FMA3 versions it picks by CPUID, as vcruntime140.dll's do. 24 in 0.2.13.
+clipcut-updater.exe             0     40    0      0          0
 clipcut                         -     -     ~1000  -          -
