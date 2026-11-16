@@ -1,0 +1,15 @@
+id = "clipcut.caption-pill"
+name = "Pill caption"
+language = "Latin"
+order = 111
+offsetY = 0.3
+
+[style]
+content = "Pill caption"
+fontFamily = "Space Grotesk"
+fontWeight = 700
+fontSize = 0.046
+background = "#6c4dffe6"
+backgroundRadius = 0.06
+backgroundPaddingX = 0.045
+shadow = false

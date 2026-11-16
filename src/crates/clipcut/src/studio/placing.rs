@@ -292,15 +292,16 @@ impl Studio {
         duration: f64,
         preset: &str,
     ) -> Option<String> {
-        let (style, offset_y, font) = match self.text_presets.iter().find(|held| held.id == preset)
-        {
-            Some(found) => (
-                found.style.clone(),
-                found.offset_y,
-                presets::install_font(&self.host.dirs, found),
-            ),
-            None => (new_title_style(&self.prefs), None, None),
-        };
+        let (style, offset_y, font, motion) =
+            match self.text_presets.iter().find(|held| held.id == preset) {
+                Some(found) => (
+                    found.style.clone(),
+                    found.offset_y,
+                    presets::install_font(&self.host.dirs, found),
+                    found.motion.clone(),
+                ),
+                None => (new_title_style(&self.prefs), None, None, None),
+            };
         // Over the picture, not under it: the first free lane above every
         // occupied one, minted at the top when there is none. A drop onto a
         // lane names its track and is placed there regardless.
@@ -312,6 +313,26 @@ impl Studio {
             offset_y,
             above: true,
         };
+        // An animated preset's title comes with its motion, in the same
+        // undo step; see `Studio::add_titles`.
+        if motion.is_some() {
+            let held: HashSet<String> = self
+                .timeline()
+                .clips
+                .iter()
+                .map(|clip| clip.id.clone())
+                .collect();
+            self.add_titles(
+                font.map(|(family, path)| Command::AddFont { family, path }),
+                vec![(add, motion)],
+            );
+            return self
+                .timeline()
+                .clips
+                .iter()
+                .find(|clip| clip.kind == model::ClipKind::Text && !held.contains(&clip.id))
+                .map(|clip| clip.id.clone());
+        }
         match font {
             Some((family, path)) => self.apply(Command::Batch {
                 commands: vec![Command::AddFont { family, path }, add],

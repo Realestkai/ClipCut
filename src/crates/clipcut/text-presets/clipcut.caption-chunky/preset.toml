@@ -1,0 +1,14 @@
+id = "clipcut.caption-chunky"
+name = "Chunky"
+language = "Latin"
+order = 105
+offsetY = 0.3
+
+[style]
+content = "Chunky"
+fontFamily = "Londrina Solid"
+fontWeight = 900
+fontSize = 0.085
+color = "#ffffff"
+strokeWidth = 0.012
+strokeColor = "#2a1a5e"

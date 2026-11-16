@@ -1,0 +1,14 @@
+id = "clipcut.caption-outline"
+name = "Outline caption"
+language = "Latin"
+order = 100
+offsetY = 0.3
+
+[style]
+content = "Outline caption"
+fontFamily = "Inter"
+fontWeight = 900
+fontSize = 0.06
+textCase = "upper"
+strokeWidth = 0.01
+strokeColor = "#000000"

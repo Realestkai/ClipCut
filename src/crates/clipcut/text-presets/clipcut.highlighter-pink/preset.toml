@@ -1,0 +1,17 @@
+id = "clipcut.highlighter-pink"
+name = "Pink marker"
+language = "Latin"
+order = 114
+offsetY = 0.3
+
+[style]
+content = "Pink marker"
+fontFamily = "Montserrat"
+fontWeight = 800
+fontSize = 0.052
+color = "#ffffff"
+background = "#ff2e88"
+backgroundRadius = 0.0
+backgroundPaddingX = 0.014
+backgroundPaddingY = 0.006
+shadow = false

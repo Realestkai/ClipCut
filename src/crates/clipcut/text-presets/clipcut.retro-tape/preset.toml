@@ -1,0 +1,16 @@
+id = "clipcut.retro-tape"
+name = "Tape label"
+language = "Latin"
+order = 135
+
+[style]
+content = "Tape label"
+fontFamily = "Staatliches"
+fontWeight = 400
+fontSize = 0.07
+textCase = "upper"
+color = "#f2e8cf"
+background = "#1f3a5f"
+backgroundRadius = 0.0
+tracking = 0.006
+shadow = false

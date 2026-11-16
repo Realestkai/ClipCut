@@ -1,0 +1,18 @@
+id = "clipcut.lower-third-place"
+name = "Location tag"
+language = "Latin"
+order = 121
+offsetY = 0.32
+
+[style]
+content = "Location tag"
+fontFamily = "Staatliches"
+fontWeight = 400
+fontSize = 0.048
+textCase = "upper"
+color = "#111111"
+background = "#ffd23f"
+backgroundRadius = 0.0
+tracking = 0.004
+align = "left"
+shadow = false

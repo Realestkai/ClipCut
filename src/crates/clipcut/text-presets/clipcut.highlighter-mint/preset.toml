@@ -1,0 +1,17 @@
+id = "clipcut.highlighter-mint"
+name = "Mint marker"
+language = "Latin"
+order = 115
+offsetY = 0.3
+
+[style]
+content = "Mint marker"
+fontFamily = "Space Grotesk"
+fontWeight = 700
+fontSize = 0.052
+color = "#06281c"
+background = "#5dffb1"
+backgroundRadius = 0.0
+backgroundPaddingX = 0.014
+backgroundPaddingY = 0.006
+shadow = false

@@ -1,0 +1,15 @@
+id = "clipcut.lower-third-dark"
+name = "Lower third, dark"
+language = "Latin"
+order = 117
+offsetY = 0.32
+
+[style]
+content = "Name - Title"
+fontFamily = "Inter"
+fontWeight = 600
+fontSize = 0.045
+background = "#111111e6"
+backgroundRadius = 0.006
+align = "left"
+shadow = false

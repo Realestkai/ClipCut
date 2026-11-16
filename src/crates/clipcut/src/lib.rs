@@ -1640,6 +1640,22 @@ fn start(project: Option<std::path::PathBuf>, smoke: bool) -> Result<(), slint::
             state.prefs.caption_style = Some(id.to_string());
             state.prefs.save(&state.host.dirs);
         }));
+    app.global::<crate::ui::CaptionStyles>()
+        .on_wording_changed(on_window!(|state, index: i32| {
+            state.handle(Msg::Captions(CaptionsMsg::WordingChanged(index)));
+        }));
+    app.global::<crate::ui::CaptionStyles>()
+        .on_group_changed(on_window!(|state, index: i32| {
+            state.handle(Msg::Captions(CaptionsMsg::GroupChanged(index)));
+        }));
+    app.global::<crate::ui::CaptionStyles>()
+        .on_pop_toggled(on_window!(|state, on: bool| {
+            state.handle(Msg::Captions(CaptionsMsg::PopToggled(on)));
+        }));
+    app.global::<crate::ui::CaptionStyles>()
+        .on_restyle_all(on_window!(|state| {
+            state.handle(Msg::Captions(CaptionsMsg::RestyleAll));
+        }));
     app.global::<Meters>().on_clip_cleared({
         let weak = app.as_weak();
         move || {

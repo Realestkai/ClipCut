@@ -1,0 +1,12 @@
+id = "clipcut.minimal-whisper"
+name = "Whisper"
+language = "Latin"
+order = 126
+
+[style]
+content = "whisper"
+fontFamily = "Inter"
+fontWeight = 400
+fontSize = 0.04
+textCase = "lower"
+tracking = 0.006

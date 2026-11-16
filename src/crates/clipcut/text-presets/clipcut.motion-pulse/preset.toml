@@ -1,0 +1,19 @@
+id = "clipcut.motion-pulse"
+name = "Pulse"
+language = "Latin"
+order = 148
+
+[style]
+content = "Pulse"
+fontFamily = "Bebas Neue"
+fontWeight = 400
+fontSize = 0.12
+color = "#ff4d6d"
+
+[motion.in]
+kind = "fade"
+seconds = 0.3
+
+[motion.loop]
+kind = "pulse"
+seconds = 1.0

@@ -1,0 +1,16 @@
+id = "clipcut.lower-third-news"
+name = "Newsroom"
+language = "Latin"
+order = 118
+offsetY = 0.32
+
+[style]
+content = "Breaking story"
+fontFamily = "Archivo Black"
+fontWeight = 400
+fontSize = 0.045
+textCase = "upper"
+background = "#d4141c"
+backgroundRadius = 0.0
+align = "left"
+shadow = false

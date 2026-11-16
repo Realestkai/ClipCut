@@ -1,0 +1,21 @@
+id = "clipcut.motion-bounce"
+name = "Bounce in"
+language = "Latin"
+order = 144
+
+[style]
+content = "Bounce in"
+fontFamily = "Londrina Solid"
+fontWeight = 900
+fontSize = 0.1
+color = "#ffe14a"
+strokeWidth = 0.01
+strokeColor = "#2a1a5e"
+
+[motion.in]
+kind = "drop"
+seconds = 0.6
+
+[motion.out]
+kind = "drop"
+seconds = 0.5

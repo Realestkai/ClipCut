@@ -1,0 +1,18 @@
+id = "clipcut.motion-fade"
+name = "Fade in"
+language = "Latin"
+order = 140
+
+[style]
+content = "Fade in"
+fontFamily = "Inter"
+fontWeight = 700
+fontSize = 0.08
+
+[motion.in]
+kind = "fade"
+seconds = 0.5
+
+[motion.out]
+kind = "fade"
+seconds = 0.5

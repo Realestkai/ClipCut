@@ -35,6 +35,10 @@
 //! end = 3
 //! color = "#ffd400"            # and any of fontWeight, italic, underline,
 //!                              # strikethrough, fontScale, strokeColor
+//!
+//! [motion.in]                  # optional: how a title placed in the look
+//! kind = "pop"                 # comes on - and [motion.out], [motion.loop] -
+//! seconds = 0.3                # by the names `ClipMotion` knows
 //! ```
 //!
 //! The font is installed when the preset is first used, not when it is
@@ -47,7 +51,7 @@
 use std::path::{Path, PathBuf};
 
 use clipcut_host::AppDirs;
-use clipcut_project::model::{TextAlign, TextStyle};
+use clipcut_project::model::{ClipMotion, TextAlign, TextStyle};
 use serde::Deserialize;
 
 /// One look a title can be given.
@@ -70,6 +74,9 @@ pub struct TextPreset {
     /// Latin and the first two characters of its words for any other
     /// writing, so a Japanese card shows Japanese.
     pub sample: String,
+    /// How a title placed in the look comes on, goes off and moves in
+    /// between, when the preset says: an animated title is a preset too.
+    pub motion: Option<ClipMotion>,
 }
 
 #[derive(Deserialize)]
@@ -91,6 +98,9 @@ struct PresetFile {
     sample: Option<String>,
     #[serde(default)]
     style: PresetStyle,
+    /// See [`TextPreset::motion`].
+    #[serde(default)]
+    motion: Option<ClipMotion>,
 }
 
 /// A title's fields, every one optional, laid over the default style.
@@ -280,6 +290,7 @@ fn parse(text: &str, folder: Option<&Path>) -> Option<(i64, TextPreset)> {
             font,
             language,
             sample,
+            motion: file.motion.and_then(ClipMotion::tidy),
         },
     ))
 }
@@ -437,6 +448,60 @@ mod tests {
         assert_eq!(style.font_weight, TextStyle::default().font_weight);
         assert_eq!(file.offset_y, Some(0.3));
         assert!(style.runs.is_empty());
+    }
+
+    /// A preset can say how its title moves: the names a clip's motion
+    /// is written in, and a time held to what a move can take.
+    #[test]
+    fn a_preset_carries_its_motion() {
+        let (_, preset) = parse(
+            r##"
+            id = "t.pop"
+            name = "Pop"
+            [motion.in]
+            kind = "pop"
+            seconds = 0.3
+            [motion.out]
+            kind = "fade"
+            seconds = 99
+            "##,
+            None,
+        )
+        .expect("parses");
+        let motion = preset.motion.expect("a motion");
+        let enter = motion.enter.as_ref().expect("an entrance");
+        assert_eq!((enter.kind.as_str(), enter.seconds), ("pop", 0.3));
+        assert_eq!(motion.exit.as_ref().expect("an exit").seconds, 10.0);
+        assert!(motion.cycle.is_none());
+        assert!(motion.engine().is_some());
+    }
+
+    /// A built-in preset's motion is one the engine knows by name: a
+    /// misspelt move would be kept, ignored, and the title would sit still.
+    #[test]
+    fn every_built_in_motion_is_one_the_engine_knows() {
+        use clipcut_core::motion::{Cycle, Move};
+        for preset in builtin() {
+            let Some(motion) = &preset.motion else {
+                continue;
+            };
+            for moving in [&motion.enter, &motion.exit].into_iter().flatten() {
+                assert!(
+                    Move::parse(&moving.kind).is_some(),
+                    "{}: {}",
+                    preset.id,
+                    moving.kind
+                );
+            }
+            if let Some(cycle) = &motion.cycle {
+                assert!(
+                    Cycle::parse(&cycle.kind).is_some(),
+                    "{}: {}",
+                    preset.id,
+                    cycle.kind
+                );
+            }
+        }
     }
 
     /// A preset can give some of its words a look of their own, written

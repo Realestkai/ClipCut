@@ -1,0 +1,24 @@
+id = "clipcut.lower-third-name"
+name = "Name and role"
+language = "Latin"
+order = 119
+offsetY = 0.32
+
+[style]
+content = "Your name\nYour role"
+fontFamily = "Hanken Grotesk"
+fontWeight = 700
+fontSize = 0.05
+color = "#111111"
+background = "#ffffff"
+backgroundRadius = 0.006
+lineHeight = 1.05
+align = "left"
+shadow = false
+
+[[style.runs]]
+start = 10
+end = 19
+color = "#555555"
+fontWeight = 400
+fontScale = 0.6
