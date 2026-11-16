@@ -143,17 +143,18 @@ pub fn read_page(html: &str) -> Result<Template, String> {
 /// Where the template's clips change: up to `slots - 1` instants, in
 /// order, picked from `changes` (see [`crate::media::picture_changes`]) as
 /// the strongest changes that stand out from the footage around them, no
-/// two closer than a few frames. A template whose preview shows fewer
+/// two closer than a fifth of a second, so a flash between two shots is
+/// one cut, not two. A template whose preview shows fewer
 /// clean cuts gets fewer slots, not invented ones.
 pub fn slot_cuts(changes: &[(f64, f64)], slots: u32, seconds: f64) -> Vec<f64> {
-    const GAP: f64 = 0.12;
+    const GAP: f64 = 0.2;
     if slots < 2 || changes.is_empty() {
         return Vec::new();
     }
     let mut sorted: Vec<f64> = changes.iter().map(|(_, score)| *score).collect();
     sorted.sort_by(f64::total_cmp);
     let median = sorted[sorted.len() / 2];
-    let floor = (median * 3.0).max(9.0);
+    let floor = (median * 2.0).max(8.0);
     // A peak: higher than the frames either side of it.
     let mut peaks: Vec<(f64, f64)> = changes
         .iter()
@@ -370,7 +371,7 @@ pub fn import(
     let found = cuts.len() + 1;
     if found < template.slots as usize {
         notes.push(format!(
-            "The template has {} clips; {found} of its cuts could be seen in its video.",
+            "The template has {} clips; {found} of them could be told apart in its video.",
             template.slots
         ));
     }
