@@ -5,8 +5,7 @@ order = 5
 sample = "Aa"
 
 [style]
-content = "Your Name
-Thanks for watching"
+content = "Your Name\nThanks for watching"
 fontFamily = "Montserrat"
 fontWeight = 800
 fontSize = 0.07
